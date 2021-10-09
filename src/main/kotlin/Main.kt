@@ -20,9 +20,9 @@ fun main(args: Array<String>) {
     val options = parseOptions(args.toList()) ?: return exitInvalidArgs()
 
     val (data, skipped) = readDataWithSkipStats(options.inputFile)
-    println("Successfully processed ${data.size + skipped} records")
+    println("Successfully read ${data.size + skipped} records.")
     if (skipped > 0) {
-        println("$skipped of those records were skipped")
+        println("$skipped of those records are invalid and thus, omitted.")
     }
 
     //createWindow("pf-2021-viz")
