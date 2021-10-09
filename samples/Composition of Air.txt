@@ -1,0 +1,5 @@
+Nitrogen 78
+Oxygen 20.9
+Argon 0.9
+Carbon dioxide 0.03
+Other gases 0.09
