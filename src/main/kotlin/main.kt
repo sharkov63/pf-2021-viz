@@ -10,8 +10,17 @@ import java.awt.event.MouseEvent
 import java.awt.event.MouseMotionAdapter
 import javax.swing.WindowConstants
 
-fun main() {
-    createWindow("pf-2021-viz")
+enum class DiagramType {
+    BAR,
+    PIE,
+    LINE,
+}
+
+fun main(args: Array<String>) {
+    val options = readOptionsFromArgs(args.toList()) ?: throw Exception("TODO")
+    val data = readData(options.inputFile)
+    println(data)
+    //createWindow("pf-2021-viz")
 }
 
 fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
@@ -23,7 +32,7 @@ fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
     window.layer.addMouseMotionListener(MyMouseMotionAdapter)
 
     window.preferredSize = Dimension(800, 600)
-    window.minimumSize = Dimension(100,100)
+    window.minimumSize = Dimension(100, 100)
     window.pack()
     window.layer.awaitRedraw()
     window.isVisible = true
