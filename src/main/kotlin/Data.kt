@@ -5,6 +5,7 @@ data class DataElement(val label: String, val value: Double)
 
 typealias Data = List<DataElement>
 
+data class DataWithSkipStats(val data: Data, val skipped: Int)
 
 fun parseDataElementOrNull(line: String): DataElement? {
     val tokens = line
@@ -21,18 +22,21 @@ fun parseDataElementOrNull(line: String): DataElement? {
     return DataElement(key, value)
 }
 
-fun parseDataFromLines(lines: List<String>): Data {
-    return lines.mapNotNull { parseDataElementOrNull(it) }
+fun parseDataFromLines(lines: List<String>): DataWithSkipStats {
+    val dataWithNulls = lines.map { parseDataElementOrNull(it) }
+    val data = dataWithNulls.filterNotNull()
+    val nullCount = dataWithNulls.count { it == null }
+    return DataWithSkipStats(data, nullCount)
 }
 
-fun readDataFromFile(file: File): Data {
+fun readDataFromFile(file: File): DataWithSkipStats {
     assert(file.exists())
     assert(file.canRead())
     val lines = file.readLines()
     return parseDataFromLines(lines)
 }
 
-fun readDataFromStdin(): Data {
+fun readDataFromStdin(): DataWithSkipStats {
     var line = readLine()
     val lines: MutableList<String> = mutableListOf()
     while (line != null) {
@@ -42,7 +46,7 @@ fun readDataFromStdin(): Data {
     return parseDataFromLines(lines)
 }
 
-fun readData(file: File?): Data {
+fun readDataWithSkipStats(file: File?): DataWithSkipStats {
     return if (file != null && file.exists() && file.canRead())
         readDataFromFile(file)
     else {

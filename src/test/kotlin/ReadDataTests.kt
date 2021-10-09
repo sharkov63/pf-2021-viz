@@ -75,10 +75,13 @@ internal class ReadDataTests {
     @Test
     fun `parseDataFromLines All in`() {
         assertEquals(
-            listOf(
-                DataElement("foo", 1.0),
-                DataElement("bar", 2.0),
-                DataElement("baz", 3.0),
+            DataWithSkipStats(
+                listOf(
+                    DataElement("foo", 1.0),
+                    DataElement("bar", 2.0),
+                    DataElement("baz", 3.0),
+                ),
+                0
             ),
             parseDataFromLines(listOf(
                 "foo 1.0",
@@ -91,9 +94,12 @@ internal class ReadDataTests {
     @Test
     fun `parseDataFromLines Skipped one`() {
         assertEquals(
-            listOf(
-                DataElement("Label with spaces", 5.0),
-                DataElement("     Leading spaces", 12.578),
+            DataWithSkipStats(
+                listOf(
+                    DataElement("Label with spaces", 5.0),
+                    DataElement("     Leading spaces", 12.578),
+                ),
+                1
             ),
             parseDataFromLines(listOf(
                 "Label with spaces 5",
