@@ -10,14 +10,10 @@ import java.awt.event.MouseEvent
 import java.awt.event.MouseMotionAdapter
 import javax.swing.WindowConstants
 
-enum class DiagramType {
-    BAR,
-    PIE,
-    LINE,
-}
+
 
 fun main(args: Array<String>) {
-    val options = readOptionsFromArgs(args.toList()) ?: throw Exception("TODO")
+    val options = parseOptions(args.toList()) ?: throw Exception("TODO")
     val data = readData(options.inputFile)
     println(data)
     //createWindow("pf-2021-viz")
