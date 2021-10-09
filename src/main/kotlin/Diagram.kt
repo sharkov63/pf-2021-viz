@@ -55,10 +55,20 @@ class PieDiagram(data: Data) : Diagram(data) {
 
     private fun getPaints(sz: Int): List<Paint> {
         assert(sz > 0)
-        val colorCodesWithoutAlpha = when {
-            sz % 7 != 1 -> listOf(0x2D7DD2, 0x62A56B, 0x97CC04, 0xC69503, 0xF45D01, 0xF45D01, 0x64403E)
-            else -> listOf(0x0B3954, 0x087E8B, 0xBFD7EA, 0xFF5A5F, 0xC81D25, 0x9368B7)
-        }
+        var colorCodesWithoutAlpha = listOf(
+            0xca3f3f,
+            0xe0607e,
+            0xab92bf,
+            0x655a7c,
+            0x696d7d,
+            0x68b0ab,
+            0x8fc0a9,
+            0xc8d5b9,
+            0xeace71,
+            0xa75a39,
+        )
+        if (sz > colorCodesWithoutAlpha.size && sz % colorCodesWithoutAlpha.size == 1)
+            colorCodesWithoutAlpha = colorCodesWithoutAlpha.dropLast(1)
         return colorCodesWithoutAlpha.map { fillPaintByColorCode(it or 0xFF000000.toInt()) }
     }
 
@@ -104,8 +114,8 @@ class PieDiagram(data: Data) : Diagram(data) {
                 x0 + colorBoxMarginX + colorBoxSz,
                 yCur - labelHeight + colorBoxMarginY + colorBoxSz
             )
-            canvas.drawRect(colorBox, BLACK_STROKE_PAINT)
             canvas.drawRect(colorBox, colorBoxFill)
+            canvas.drawRect(colorBox, BLACK_STROKE_PAINT)
 
             // Draw lines
             if (i >= paints.size || i + paints.size < data.size){
