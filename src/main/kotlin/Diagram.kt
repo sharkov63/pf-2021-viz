@@ -39,6 +39,9 @@ val LIGHT_GREY_STROKE_PAINT = fillPaintByColorCode(0xFFAAAAAA.toInt()).apply {
 val TYPEFACE = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
 val FONT = Font(TYPEFACE, 20f)
 
+
+
+
 open class Diagram(val data: Data) {
     open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
 
@@ -55,7 +58,7 @@ class PieDiagram(data: Data) : Diagram(data) {
 
     private fun getPaints(sz: Int): List<Paint> {
         assert(sz > 0)
-        var colorCodesWithoutAlpha = listOf(
+        var rgbCodes = listOf(
             0xca3f3f,
             0xe0607e,
             0xab92bf,
@@ -67,9 +70,12 @@ class PieDiagram(data: Data) : Diagram(data) {
             0xeace71,
             0xa75a39,
         )
-        if (sz > colorCodesWithoutAlpha.size && sz % colorCodesWithoutAlpha.size == 1)
-            colorCodesWithoutAlpha = colorCodesWithoutAlpha.dropLast(1)
-        return colorCodesWithoutAlpha.map { fillPaintByColorCode(it or 0xFF000000.toInt()) }
+        if (sz > rgbCodes.size && sz % rgbCodes.size == 1)
+            rgbCodes = rgbCodes.dropLast(1)
+        val k = rgbCodes.size / sz
+        if (k >= 2) // make colors more distinct
+            rgbCodes = rgbCodes.filterIndexed{ idx, _ -> idx % k == 0 }
+        return rgbCodes.map { fillPaintByColorCode(it or 0xFF000000.toInt()) }
     }
 
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
