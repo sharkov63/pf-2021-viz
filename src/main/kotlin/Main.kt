@@ -19,59 +19,20 @@ fun main(args: Array<String>) {
 
     val options = parseOptions(args.toList()) ?: return exitInvalidArgs()
 
-    val (data, skipped) = readDataWithSkipStats(options.inputFile)
-    println("Successfully read ${data.size + skipped} records.")
-    if (skipped > 0) {
-        println("$skipped of those records are invalid and thus, omitted.")
+    val (data, skippedRecords) = readDataWithSkipStats(options.inputFile)
+    println("Successfully read ${data.size + skippedRecords} records.")
+    if (skippedRecords > 0) {
+        println("$skippedRecords of those records are invalid and thus, omitted.")
     }
 
-    //createWindow("pf-2021-viz")
-}
-
-fun createWindow(title: String) = runBlocking(Dispatchers.Swing) {
-    val window = SkiaWindow()
-    window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
-    window.title = title
-
-    window.layer.renderer = Renderer(window.layer)
-    window.layer.addMouseMotionListener(MyMouseMotionAdapter)
-
-    window.preferredSize = Dimension(800, 600)
-    window.minimumSize = Dimension(100, 100)
-    window.pack()
-    window.layer.awaitRedraw()
-    window.isVisible = true
-}
-
-class Renderer(val layer: SkiaLayer): SkiaRenderer {
-    val typeface = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
-    val font = Font(typeface, 40f)
-    val paint = Paint().apply {
-        color = 0xff9BC730L.toInt()
-        mode = PaintMode.FILL
-        strokeWidth = 1f
+    if (data.isEmpty()) {
+        return exitEmptyData()
     }
 
-    override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
-        val contentScale = layer.contentScale
-        canvas.scale(contentScale, contentScale)
-        val w = (width / contentScale).toInt()
-        val h = (height / contentScale).toInt()
-
-        // РИСОВАНИЕ
-
-        layer.needRedraw()
+    val diagram = when (options.diagramType) {
+        DiagramType.BAR -> BarDiagram(data)
+        DiagramType.PIE -> PieDiagram(data)
+        DiagramType.LINE -> LineDiagram(data)
     }
-}
-
-object State {
-    var mouseX = 0f
-    var mouseY = 0f
-}
-
-object MyMouseMotionAdapter : MouseMotionAdapter() {
-    override fun mouseMoved(event: MouseEvent) {
-        State.mouseX = event.x.toFloat()
-        State.mouseY = event.y.toFloat()
-    }
+    createDiagramWindow("pf-2021-viz", diagram)
 }
