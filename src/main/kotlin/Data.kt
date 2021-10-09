@@ -43,8 +43,16 @@ fun readDataFromStdin(): Data {
 }
 
 fun readData(file: File?): Data {
-    return when {
-        file != null -> readDataFromFile(file)
-        else -> readDataFromStdin()
+    return if (file != null && file.exists() && file.canRead())
+        readDataFromFile(file)
+    else {
+        println(
+            if (file == null)
+                "Input file is not specified."
+            else
+                "File \"${file.path}\" does not exist or cannot be read."
+        )
+        println("Please write the data in console:")
+        readDataFromStdin()
     }
 }
