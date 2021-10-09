@@ -13,7 +13,10 @@ import javax.swing.WindowConstants
 
 
 fun main(args: Array<String>) {
-    val options = parseOptions(args.toList()) ?: throw Exception("TODO")
+    if (args.isNotEmpty() && (args.first() == "-h" || args.first() == "--help")) {
+        return exitHelp()
+    }
+    val options = parseOptions(args.toList()) ?: return exitInvalidArgs()
     val data = readData(options.inputFile)
     println(data)
     //createWindow("pf-2021-viz")
