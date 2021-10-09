@@ -15,7 +15,7 @@ fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatche
 
     window.layer.renderer = Renderer(window.layer, diagram)
 
-    window.preferredSize = Dimension(800, 600)
+    window.preferredSize = Dimension(1200, 600)
     window.minimumSize = Dimension(100, 100)
     window.pack()
     window.layer.awaitRedraw()

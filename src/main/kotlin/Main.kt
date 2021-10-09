@@ -1,17 +1,3 @@
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.swing.Swing
-import org.jetbrains.skija.*
-import org.jetbrains.skiko.SkiaLayer
-import org.jetbrains.skiko.SkiaRenderer
-import org.jetbrains.skiko.SkiaWindow
-import java.awt.Dimension
-import java.awt.event.MouseEvent
-import java.awt.event.MouseMotionAdapter
-import javax.swing.WindowConstants
-
-
-
 fun main(args: Array<String>) {
     if (args.isNotEmpty() && (args.first() == "-h" || args.first() == "--help")) {
         return exitHelp()
