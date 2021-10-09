@@ -16,9 +16,15 @@ fun main(args: Array<String>) {
     if (args.isNotEmpty() && (args.first() == "-h" || args.first() == "--help")) {
         return exitHelp()
     }
+
     val options = parseOptions(args.toList()) ?: return exitInvalidArgs()
-    val data = readData(options.inputFile)
-    println(data)
+
+    val (data, skipped) = readDataWithSkipStats(options.inputFile)
+    println("Successfully processed ${data.size + skipped} records")
+    if (skipped > 0) {
+        println("$skipped of those records were skipped")
+    }
+
     //createWindow("pf-2021-viz")
 }
 
