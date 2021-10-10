@@ -46,6 +46,7 @@ fun readDataFromStdin(): DataWithSkipStats {
     return parseDataFromLines(lines)
 }
 
+// TODO("Allow reading data from multiple files")
 fun readDataWithSkipStats(file: File?): DataWithSkipStats {
     return if (file != null && file.exists() && file.canRead())
         readDataFromFile(file)

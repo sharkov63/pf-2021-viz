@@ -41,16 +41,90 @@ val FONT = Font(TYPEFACE, 20f)
 
 
 
+fun getRulerStep(maxValue: Float): Float {
+    val k = log10(maxValue).toInt()
+    val d = 10f.pow(k)
+    return when {
+        2 * d > maxValue -> d / 10f
+        3 * d > maxValue -> d / 5f
+        4 * d > maxValue -> d / 2f
+        else -> d
+    }
+}
+
 
 open class Diagram(val data: Data) {
+    // TODO("Diagram title")
+    // TODO("Measure units")
+    // TODO("Add selectable options")
+
     open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
 
     }
 }
 
 class BarDiagram(data: Data) : Diagram(data) {
-    override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+    private val barPaint = fillPaintByColorCode(0xFF4F86C6.toInt())
 
+    override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+        // TODO("Shift min value")
+
+        val font = FONT.makeWithSize(sz * 0.03f).apply {
+            isEmboldened = true
+        }
+        val y1 = y0 + sz
+
+        // Draw bars
+        val maxValue = data.maxOf { it.value }
+        val barHeights = data.map { (it.value / maxValue * sz).toFloat() }
+        val barWidth = sz * 0.2f
+        val xStep = sz * 0.3f
+        for (i in data.indices) {
+            val x = x0 + xStep * i
+            val y = y1 - barHeights[i]
+            canvas.drawRect(Rect(x, y, x + barWidth, y1), barPaint)
+        }
+
+        val x2 = x0 + xStep * (data.size - 1) + barWidth
+
+        // Draw labels
+        for (i in data.indices) {
+            val label = data[i].label
+            val xMid = x0 + xStep * i + barWidth / 2
+            val labelWidth = font.measureTextWidth(label, BLACK_FILL_PAINT)
+            val labelHeight = font.measureText(label, BLACK_FILL_PAINT).height
+            canvas.drawString(
+                label,
+                xMid - labelWidth / 2,
+                y1 + labelHeight * 1.5f,
+                font,
+                BLACK_FILL_PAINT
+            )
+        }
+
+        // Draw ruler
+        val d = getRulerStep(maxValue.toFloat())
+        val dIsInteger = floor(d) == d
+        val decimals = max(0, -log10(d).toInt())
+        val yStep = (d / maxValue * sz).toFloat()
+        for (i in 0..ceil(maxValue / d).toInt()) {
+            val y = y1 - yStep * i
+            val xLeak = 5f
+            canvas.drawLine(x0 - xLeak, y, x2 + xLeak, y, LIGHT_GREY_STROKE_PAINT)
+            val label = if (dIsInteger)
+                (d * i).toInt().toString()
+            else
+                "%.${decimals}f".format(d * i)
+            val labelWidth = font.measureTextWidth(label)
+            val labelHeight = font.measureText(label).height
+            canvas.drawString(
+                label,
+                x0 - labelWidth - 2 * xLeak,
+                y + labelHeight / 2,
+                font,
+                BLACK_FILL_PAINT
+            )
+        }
     }
 }
 
@@ -99,7 +173,15 @@ class PieDiagram(data: Data) : Diagram(data) {
         for (i in data.indices) {
             val arcLen = arcLens[i]
             val arcStart = arcStarts[i]
-            canvas.drawArc(x1 , y1, x1 + sz, y1 + sz, arcStart, arcLen, true, paints[i % paints.size])
+            canvas.drawArc(x1 ,
+                y1,
+                x1 + sz,
+                y1 + sz,
+                arcStart,
+                arcLen,
+                true,
+                paints[i % paints.size]
+            )
         }
 
         val colorBoxSz = maxLabelHeight * 0.7f
@@ -124,7 +206,7 @@ class PieDiagram(data: Data) : Diagram(data) {
             canvas.drawRect(colorBox, BLACK_STROKE_PAINT)
 
             // Draw lines
-            if (i >= paints.size || i + paints.size < data.size){
+            if (i >= paints.size || i + paints.size < data.size) {
                 val arcMid = (arcStarts[i] + arcStarts[i + 1]) / 2
                 val arcMidRad = arcMid / 360 * 2 * PI.toFloat()
                 val x = xc + radius / 2 * cos(arcMidRad)
@@ -152,6 +234,6 @@ class PieDiagram(data: Data) : Diagram(data) {
 
 class LineDiagram(data: Data) : Diagram(data) {
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
-
+        TODO("Draw line diagram")
     }
 }
