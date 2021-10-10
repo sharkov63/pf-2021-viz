@@ -52,6 +52,43 @@ fun getRulerStep(maxValue: Float): Float {
     }
 }
 
+fun drawRuler(
+    canvas: Canvas,
+    sz: Float,
+    maxValue: Double,
+    y1: Float,
+    x0: Float,
+    x2: Float,
+    font: Font,
+    drawVerticalLine: Boolean = false
+) {
+    val d = getRulerStep(maxValue.toFloat())
+    val dIsInteger = floor(d) == d
+    val decimals = max(0, -log10(d).toInt())
+    val yStep = (d / maxValue * sz).toFloat()
+    val c = ceil(maxValue / d).toInt()
+    val leak = 5f
+    if (drawVerticalLine)
+        canvas.drawLine(x0 - leak, y1, x0 - leak, y1 - yStep * c - leak, LIGHT_GREY_STROKE_PAINT)
+    for (i in 0..c) {
+        val y = y1 - yStep * i
+        canvas.drawLine(x0 - leak, y, x2 + leak, y, LIGHT_GREY_STROKE_PAINT)
+        val label = if (dIsInteger)
+            (d * i).toInt().toString()
+        else
+            "%.${decimals}f".format(d * i)
+        val labelWidth = font.measureTextWidth(label)
+        val labelHeight = font.measureText(label).height
+        canvas.drawString(
+            label,
+            x0 - labelWidth - 2 * leak,
+            y + labelHeight / 2,
+            font,
+            BLACK_FILL_PAINT
+        )
+    }
+}
+
 
 open class Diagram(val data: Data) {
     // TODO("Diagram title")
@@ -68,6 +105,7 @@ class BarDiagram(data: Data) : Diagram(data) {
 
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
         // TODO("Shift min value")
+        // TODO("Auto bar width")
 
         val font = FONT.makeWithSize(sz * 0.03f).apply {
             isEmboldened = true
@@ -102,29 +140,7 @@ class BarDiagram(data: Data) : Diagram(data) {
             )
         }
 
-        // Draw ruler
-        val d = getRulerStep(maxValue.toFloat())
-        val dIsInteger = floor(d) == d
-        val decimals = max(0, -log10(d).toInt())
-        val yStep = (d / maxValue * sz).toFloat()
-        for (i in 0..ceil(maxValue / d).toInt()) {
-            val y = y1 - yStep * i
-            val xLeak = 5f
-            canvas.drawLine(x0 - xLeak, y, x2 + xLeak, y, LIGHT_GREY_STROKE_PAINT)
-            val label = if (dIsInteger)
-                (d * i).toInt().toString()
-            else
-                "%.${decimals}f".format(d * i)
-            val labelWidth = font.measureTextWidth(label)
-            val labelHeight = font.measureText(label).height
-            canvas.drawString(
-                label,
-                x0 - labelWidth - 2 * xLeak,
-                y + labelHeight / 2,
-                font,
-                BLACK_FILL_PAINT
-            )
-        }
+        drawRuler(canvas, sz, maxValue, y1, x0, x2, font)
     }
 }
 
@@ -233,7 +249,53 @@ class PieDiagram(data: Data) : Diagram(data) {
 }
 
 class LineDiagram(data: Data) : Diagram(data) {
+
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
-        TODO("Draw line diagram")
+        val font = FONT.makeWithSize(sz * 0.03f).apply {
+            isEmboldened = true
+        }
+        val linePaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply() {
+            strokeWidth = 0.005f * sz
+        }
+        val pointPaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply() {
+            strokeWidth = 0.012f * sz
+        }
+
+        val xMargin = sz * 0.05f
+        val x1 = x0 + xMargin
+        val y1 = y0 + sz
+
+        // Draw lines and points
+        val maxValue = data.maxOf { it.value }
+        val barHeights = data.map { (it.value / maxValue * sz).toFloat() }
+        val xStep = sz * 0.15f
+        val points = data.mapIndexed { i, _ ->
+            Pair(x1 + xStep * i, y1 - barHeights[i])
+        }
+        val pointsFlatten = points
+            .flatMap { (x, y) -> listOf(x, y) }
+            .toFloatArray()
+        canvas.drawPolygon(pointsFlatten, linePaint)
+        points.forEach { (x, y) ->
+            canvas.drawPoint(x, y, pointPaint)
+        }
+
+        drawRuler(canvas, sz, maxValue, y1, x0, x1 + xStep * (data.size - 1) + xMargin, font, true)
+
+        // Draw labels
+        for (i in data.indices) {
+            val label = data[i].label
+            val labelWidth = font.measureTextWidth(label)
+            val labelHeight = font.measureText(label).height
+            val x = x1 + i * xStep
+            canvas.drawLine(x, y1 + 3f, x, y1 - 3f, BLACK_FILL_PAINT)
+            canvas.drawString(
+                label,
+                x - labelWidth / 2,
+                y1 + labelHeight * 1.5f,
+                font,
+                BLACK_FILL_PAINT
+            )
+        }
     }
 }
