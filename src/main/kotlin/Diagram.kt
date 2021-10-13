@@ -42,24 +42,19 @@ val FONT = Font(TYPEFACE, 20f)
 
 
 
-fun getRulerStep(maxValue: Float): Float {
-    val k = log10(maxValue).toInt()
-    val d = 10f.pow(k)
-    return when {
-        2 * d > maxValue -> d / 10f
-        3 * d > maxValue -> d / 5f
-        4 * d > maxValue -> d / 2f
-        else -> d
-    }
-}
-
 open class Diagram(val data: Data) {
     // TODO("Diagram title")
     // TODO("Measure units")
     // TODO("Add selectable options")
 
-    open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+    val minValue = data.minOf { it.value }
+    val maxValue = data.maxOf { it.value }
+    val sumValues = data
+        .sumOf { it.value.toDouble() }
+        .toFloat()
 
+    open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+        throw Exception("Unable to draw Diagram")
     }
 }
 
@@ -100,9 +95,6 @@ class PieDiagram(data: Data) : Diagram(data) {
 
         val paints = getPaints(data.size)
 
-        val sumValues = data
-            .sumOf { it.value.toDouble() }
-            .toFloat()
         val arcLens = data.map { (it.value * 360f / sumValues) }
         val arcStarts = arcLens.scan(0f) { s, arcLen -> s + arcLen }
 
@@ -171,33 +163,66 @@ class PieDiagram(data: Data) : Diagram(data) {
 }
 
 
-open class PlaneDiagram(data: Data): Diagram(data) {
+open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
+
+    private fun calcRulerStep(range: Float): Float {
+        if (range == 0f) {
+            return 0f
+        }
+        val k = floor(log10(range)).toInt()
+        val d = 10f.pow(k)
+        return when {
+            2 * d > range -> d / 10f
+            3 * d > range -> d / 5f
+            4 * d > range -> d / 2f
+            else -> d
+        }
+    }
+
+    val rangeValues = if (cropBottom) {
+        maxValue - minValue
+    } else {
+        maxValue
+    }
+    val rulerStep = calcRulerStep(rangeValues)
+    val rulerBeginRel = if (cropBottom) {
+        floor(minValue / rulerStep).toInt()
+    } else {
+        0
+    }
+    val rulerBegin = rulerBeginRel * rulerStep
+    val rulerEndRel = ceil(maxValue / rulerStep).toInt()
+    val rulerEnd = rulerEndRel * rulerStep
+    val rulerRangeRel = rulerEndRel - rulerBeginRel
+    val rulerRange = rulerEnd - rulerBegin
+
+    fun getYCoords(y0: Float, y1: Float): List<Float> {
+        return data.map { y1 - (it.value - rulerBegin) / rulerRange * (y1 - y0) }
+    }
 
     fun drawRuler(
         canvas: Canvas,
-        sz: Float,
-        maxValue: Float,
+        y0: Float,
         y1: Float,
         x0: Float,
-        x2: Float,
+        x1: Float,
         font: Font,
-        drawVerticalLine: Boolean = false
+        drawVerticalLine: Boolean = false,
     ) {
-        val d = getRulerStep(maxValue)
-        val dIsInteger = floor(d) == d
-        val decimals = max(0, -log10(d).toInt())
-        val yStep = (d / maxValue * sz)
-        val c = ceil(maxValue / d).toInt()
+        val yStep = (y1 - y0) / rulerRangeRel
+        val rulerStepIsInteger = floor(rulerStep) == rulerStep
+        val decimals = max(0, -floor(log10(rulerStep)).toInt())
         val leak = 5f
-        if (drawVerticalLine)
-            canvas.drawLine(x0 - leak, y1, x0 - leak, y1 - yStep * c - leak, LIGHT_GREY_STROKE_PAINT)
-        for (i in 0..c) {
-            val y = y1 - yStep * i
-            canvas.drawLine(x0 - leak, y, x2 + leak, y, LIGHT_GREY_STROKE_PAINT)
-            val label = if (dIsInteger)
-                (d * i).toInt().toString()
+        if (drawVerticalLine) {
+            canvas.drawLine(x0 - leak, y1, x0 - leak, y0 - leak, LIGHT_GREY_STROKE_PAINT)
+        }
+        for (i in rulerBeginRel..rulerEndRel) {
+            val y = y1 - yStep * (i - rulerBeginRel)
+            canvas.drawLine(x0 - leak, y, x1 + leak, y, LIGHT_GREY_STROKE_PAINT)
+            val label = if (rulerStepIsInteger)
+                (rulerStep * i).toInt().toString()
             else
-                "%.${decimals}f".format(d * i)
+                "%.${decimals}f".format(rulerStep * i)
             val labelWidth = font.measureTextWidth(label)
             val labelHeight = font.measureText(label).height
             canvas.drawString(
@@ -236,16 +261,12 @@ open class PlaneDiagram(data: Data): Diagram(data) {
         }
     }
 
-    fun getLowerBoundValue(minValue: Float): Float {
-        return minValue
-    }
 }
 
-class BarDiagram(data: Data) : PlaneDiagram(data) {
+class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, cropBottom) {
     private val barPaint = fillPaintByColorCode(0xFF4F86C6.toInt())
 
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
-        // TODO("Shift min value")
         // TODO("Auto bar width")
 
         val font = FONT.makeWithSize(sz * 0.03f).apply {
@@ -254,13 +275,12 @@ class BarDiagram(data: Data) : PlaneDiagram(data) {
         val y1 = y0 + sz
 
         // Draw bars
-        val maxValue = data.maxOf { it.value }
-        val barHeights = data.map { (it.value / maxValue * sz) }
+        val yCoords = getYCoords(y0, y1)
         val barWidth = sz * 0.2f
         val xStep = sz * 0.3f
         for (i in data.indices) {
             val x = x0 + xStep * i
-            val y = y1 - barHeights[i]
+            val y = yCoords[i]
             canvas.drawRect(Rect(x, y, x + barWidth, y1), barPaint)
         }
 
@@ -278,8 +298,7 @@ class BarDiagram(data: Data) : PlaneDiagram(data) {
 
         drawRuler(
             canvas,
-            sz,
-            maxValue,
+            y0,
             y1,
             x0,
             x2,
@@ -288,7 +307,7 @@ class BarDiagram(data: Data) : PlaneDiagram(data) {
     }
 }
 
-class LineDiagram(data: Data) : PlaneDiagram(data) {
+class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, cropBottom) {
 
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
         val font = FONT.makeWithSize(sz * 0.03f).apply {
@@ -306,13 +325,10 @@ class LineDiagram(data: Data) : PlaneDiagram(data) {
         val y1 = y0 + sz
 
         // Draw lines and points
-        val maxValue = data.maxOf { it.value }
-        val minValue = data.minOf { it.value }
-        val lowerBoundValue = getLowerBoundValue(minValue)
-        val barHeights = data.map { ((it.value - lowerBoundValue) / (maxValue - lowerBoundValue) * sz) }
+        val yCoords = getYCoords(y0, y1)
         val xStep = sz * 0.15f
         val points = data.mapIndexed { i, _ ->
-            Pair(x1 + xStep * i, y1 - barHeights[i])
+            Pair(x1 + xStep * i, yCoords[i])
         }
         val pointsFlatten = points
             .flatMap { (x, y) -> listOf(x, y) }
@@ -324,8 +340,7 @@ class LineDiagram(data: Data) : PlaneDiagram(data) {
 
         drawRuler(
             canvas,
-            sz,
-            maxValue,
+            y0,
             y1,
             x0,
             x1 + xStep * (data.size - 1) + xMargin,
