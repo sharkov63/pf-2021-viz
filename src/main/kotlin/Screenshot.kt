@@ -32,4 +32,5 @@ fun writeScreenshotToFile(file: File) {
         return
     }
     file.writeBytes(bytes)
+    println("Successfully written PNG data to \"${file.path}\"")
 }
