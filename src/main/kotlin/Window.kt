@@ -8,8 +8,9 @@ import org.jetbrains.skiko.SkiaWindow
 import java.awt.Dimension
 import javax.swing.WindowConstants
 
+val window = SkiaWindow()
+
 fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatchers.Swing) {
-    val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
 
