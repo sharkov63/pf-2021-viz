@@ -4,37 +4,37 @@ internal class ReadDataTests {
 
     @Test
     fun `parseDataElementOrNull Correct`() {
-        assertEquals(DataElement("label", 2.0), parseDataElementOrNull("label 2.0"))
+        assertEquals(DataElement("label", 2f), parseDataElementOrNull("label 2.0"))
     }
 
     @Test
     fun `parseDataElementOrNull Label with spaces`() {
-        assertEquals(DataElement("label with spaces", 0.0), parseDataElementOrNull("label with spaces 0"))
+        assertEquals(DataElement("label with spaces", 0f), parseDataElementOrNull("label with spaces 0"))
     }
 
     @Test
     fun `parseDataElementOrNull Many spaces`() {
-        assertEquals(DataElement("many    spaces", 998244353.0), parseDataElementOrNull("many    spaces        998244353"))
+        assertEquals(DataElement("many    spaces", 998244353f), parseDataElementOrNull("many    spaces        998244353"))
     }
 
     @Test
     fun `parseDataElementOrNull Leading spaces`() {
-        assertEquals(DataElement("   label", 12.3), parseDataElementOrNull("   label 12.3"))
+        assertEquals(DataElement("   label", 12.3f), parseDataElementOrNull("   label 12.3"))
     }
 
     @Test
     fun `parseDataElementOrNull Trailing spaces`() {
-        assertEquals(DataElement("label", 16.9), parseDataElementOrNull("label 16.9      "))
+        assertEquals(DataElement("label", 16.9f), parseDataElementOrNull("label 16.9      "))
     }
 
     @Test
     fun `parseDataElementOrNull Label is a number`() {
-        assertEquals(DataElement("10", 10.0), parseDataElementOrNull("10    10 "))
+        assertEquals(DataElement("10", 10f), parseDataElementOrNull("10    10 "))
     }
 
     @Test
     fun `parseDataElementOrNull Label is a negative number`() {
-        assertEquals(DataElement("-10", 11.0), parseDataElementOrNull("-10    11 "))
+        assertEquals(DataElement("-10", 11f), parseDataElementOrNull("-10    11 "))
     }
 
     @Test
@@ -77,9 +77,9 @@ internal class ReadDataTests {
         assertEquals(
             DataWithSkipStats(
                 listOf(
-                    DataElement("foo", 1.0),
-                    DataElement("bar", 2.0),
-                    DataElement("baz", 3.0),
+                    DataElement("foo", 1f),
+                    DataElement("bar", 2f),
+                    DataElement("baz", 3f),
                 ),
                 0
             ),
@@ -96,8 +96,8 @@ internal class ReadDataTests {
         assertEquals(
             DataWithSkipStats(
                 listOf(
-                    DataElement("Label with spaces", 5.0),
-                    DataElement("     Leading spaces", 12.578),
+                    DataElement("Label with spaces", 5f),
+                    DataElement("     Leading spaces", 12.578f),
                 ),
                 1
             ),
