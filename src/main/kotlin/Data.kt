@@ -1,7 +1,7 @@
 import java.io.File
 import kotlin.text.*
 
-data class DataElement(val label: String, val value: Double)
+data class DataElement(val label: String, val value: Float)
 
 typealias Data = List<DataElement>
 
@@ -16,7 +16,8 @@ fun parseDataElementOrNull(line: String): DataElement? {
         .map { it.reversed().trimEnd() }
     if (tokens.size == 1) return null
     val key = tokens.first()
-    val value = tokens.last().toDoubleOrNull() ?: return null
+    val value = tokens.last().toFloatOrNull() ?: return null
+    // TODO("Allow negative numbers for bar and line diagrams")
     if (value.isInfinite() || value.isNaN() || value < 0)
         return null
     return DataElement(key, value)
