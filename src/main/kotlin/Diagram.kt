@@ -353,7 +353,7 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
 
         val xMargin = max(maxLabelWidth / 2, sz * 0.05f)
         val x1 = x0 + xMargin
-        val xStep = max(maxLabelWidth, sz * 0.15f)
+        val xStep = max(maxLabelWidth + sz * 0.035f, sz * 0.15f)
         val points = data.mapIndexed { i, _ ->
             Pair(x1 + xStep * i, yCoords[i])
         }
