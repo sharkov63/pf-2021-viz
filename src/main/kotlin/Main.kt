@@ -23,5 +23,10 @@ fun main(args: Array<String>) {
         DiagramType.PIE -> PieDiagram(data)
         DiagramType.LINE -> LineDiagram(data)
     }
+
     createDiagramWindow("pf-2021-viz", diagram)
+
+    if (options.outputFile != null) {
+        writeScreenshotToFile(options.outputFile)
+    }
 }
