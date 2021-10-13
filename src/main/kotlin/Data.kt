@@ -17,8 +17,7 @@ fun parseDataElementOrNull(line: String): DataElement? {
     if (tokens.size == 1) return null
     val key = tokens.first()
     val value = tokens.last().toFloatOrNull() ?: return null
-    // TODO("Allow negative numbers for bar and line diagrams")
-    if (value.isInfinite() || value.isNaN() || value < 0)
+    if (value.isInfinite() || value.isNaN())
         return null
     return DataElement(key, value)
 }

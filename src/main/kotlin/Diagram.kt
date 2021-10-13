@@ -47,13 +47,15 @@ open class Diagram(val data: Data) {
     // TODO("Measure units")
     // TODO("Add selectable options")
 
-    val minValue = data.minOf { it.value }
-    val maxValue = data.maxOf { it.value }
-    val sumValues = data
-        .sumOf { it.value.toDouble() }
+    val values = data.map { it.value }
+    val labels = data.map { it.label }
+
+    val minValue = values.minOf { it }
+    val maxValue = values.maxOf { it }
+    val sumValues = values
+        .sumOf { it.toDouble() }
         .toFloat()
 
-    val labels = data.map { it.label }
 
     open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
         throw Exception("Unable to draw Diagram")
@@ -61,6 +63,16 @@ open class Diagram(val data: Data) {
 }
 
 class PieDiagram(data: Data) : Diagram(data) {
+    init {
+        val negativeElement = data.find { it.value < 0 }
+        if (negativeElement != null) {
+            exitNegativeValues(DiagramType.PIE, negativeElement)
+        }
+
+        if (sumValues <= 0f) {
+            exitPieZeroSum()
+        }
+    }
 
     private fun getPaints(sz: Int): List<Paint> {
         assert(sz > 0)
@@ -76,19 +88,21 @@ class PieDiagram(data: Data) : Diagram(data) {
             0xeace71,
             0xa75a39,
         )
-        if (sz > rgbCodes.size && sz % rgbCodes.size == 1)
+        if (sz > rgbCodes.size && sz % rgbCodes.size == 1) {
             rgbCodes = rgbCodes.dropLast(1)
+        }
         val k = rgbCodes.size / sz
-        if (k >= 2) // make colors more distinct
-            rgbCodes = rgbCodes.filterIndexed{ idx, _ -> idx % k == 0 }
+        if (k >= 2) { // make colors more distinct
+            rgbCodes = rgbCodes.filterIndexed { idx, _ -> idx % k == 0 }
+        }
         return rgbCodes.map { fillPaintByColorCode(it or 0xFF000000.toInt()) }
     }
 
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
         val radius = sz / 2
         val font = FONT.makeWithSize(sz * 0.05f)
-        val maxLabelWidth = data.maxOf { font.measureTextWidth(it.label, BLACK_FILL_PAINT) }
-        val maxLabelHeight = data.maxOf { font.measureText(it.label, BLACK_FILL_PAINT).height }
+        val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
+        val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
         val blankWidth = sz * 0.1f
         val x1 = x0 + maxLabelWidth + blankWidth
         val y1 = y0
@@ -97,7 +111,7 @@ class PieDiagram(data: Data) : Diagram(data) {
 
         val paints = getPaints(data.size)
 
-        val arcLens = data.map { (it.value * 360f / sumValues) }
+        val arcLens = values.map { (it * 360f / sumValues) }
         val arcStarts = arcLens.scan(0f) { s, arcLen -> s + arcLen }
 
         // Draw arcs
@@ -112,16 +126,17 @@ class PieDiagram(data: Data) : Diagram(data) {
                 arcStart,
                 arcLen,
                 true,
-                paints[i % paints.size]
+                paints[i % paints.size],
             )
         }
 
+        // Draw labels
         val colorBoxSz = maxLabelHeight * 0.7f
         val colorBoxMarginX = (maxLabelHeight - colorBoxSz) / 2
         val yStep = maxLabelHeight * 1.3f
         var yCur = y0 + yStep
-        for (i in data.indices) {
-            val label = data[i].label
+        for (i in labels.indices) {
+            val label = labels[i]
             val labelWidth = font.measureTextWidth(label)
             val labelHeight = font.measureText(label).height
 
@@ -132,12 +147,12 @@ class PieDiagram(data: Data) : Diagram(data) {
                 x0 + colorBoxMarginX,
                 yCur - labelHeight + colorBoxMarginY,
                 x0 + colorBoxMarginX + colorBoxSz,
-                yCur - labelHeight + colorBoxMarginY + colorBoxSz
+                yCur - labelHeight + colorBoxMarginY + colorBoxSz,
             )
             canvas.drawRect(colorBox, colorBoxFill)
             canvas.drawRect(colorBox, BLACK_STROKE_PAINT)
 
-            // Draw lines
+            // Draw lines, if colors coincide
             if (i >= paints.size || i + paints.size < data.size) {
                 val arcMid = (arcStarts[i] + arcStarts[i + 1]) / 2
                 val arcMidRad = arcMid / 360 * 2 * PI.toFloat()
@@ -145,14 +160,11 @@ class PieDiagram(data: Data) : Diagram(data) {
                 val y = yc + radius / 2 * sin(arcMidRad)
                 canvas.drawPolygon(
                     floatArrayOf(
-                        x0 + maxLabelHeight + labelWidth + 10f,
-                        yCur - labelHeight / 2,
-                        x0 + maxLabelHeight + maxLabelWidth + 10f,
-                        yCur - labelHeight / 2,
-                        x,
-                        y,
+                        x0 + maxLabelHeight + labelWidth + 10f, yCur - labelHeight / 2,
+                        x0 + maxLabelHeight + maxLabelWidth + 10f, yCur - labelHeight / 2,
+                        x, y,
                     ),
-                    LIGHT_GREY_STROKE_PAINT
+                    LIGHT_GREY_STROKE_PAINT,
                 )
             }
 
@@ -169,7 +181,7 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
 
     private fun calcRulerStep(range: Float): Float {
         if (range == 0f) {
-            return 0f
+            return 1f
         }
         val k = floor(log10(range)).toInt()
         val d = 10f.pow(k)
@@ -181,19 +193,19 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         }
     }
 
-    val rangeValues = if (cropBottom) {
+    val rangeValues = if (cropBottom || minValue < 0) {
         maxValue - minValue
     } else {
         maxValue
     }
     val rulerStep = calcRulerStep(rangeValues)
-    val rulerBeginRel = if (cropBottom) {
+    val rulerBeginRel = if (cropBottom || minValue < 0) {
         floor(minValue / rulerStep).toInt()
     } else {
         0
     }
     val rulerBegin = rulerBeginRel * rulerStep
-    val rulerEndRel = ceil(maxValue / rulerStep).toInt()
+    val rulerEndRel = floor(maxValue / rulerStep).toInt() + 1
     val rulerEnd = rulerEndRel * rulerStep
     val rulerRangeRel = rulerEndRel - rulerBeginRel
     val rulerRange = rulerEnd - rulerBegin
@@ -267,6 +279,13 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
 }
 
 class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, cropBottom) {
+    init {
+        val negativeElement = data.find { it.value < 0 }
+        if (negativeElement != null) {
+            exitNegativeValues(DiagramType.BAR, negativeElement)
+        }
+    }
+
     private val barPaint = fillPaintByColorCode(0xFF4F86C6.toInt())
 
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {

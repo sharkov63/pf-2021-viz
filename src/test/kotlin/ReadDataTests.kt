@@ -54,7 +54,7 @@ internal class ReadDataTests {
 
     @Test
     fun `parseDataElementOrNull Value is negative`() {
-        assertEquals(null, parseDataElementOrNull("label -1.0"))
+        assertEquals(DataElement("label", -1f), parseDataElementOrNull("label -1.0"))
     }
 
     @Test
