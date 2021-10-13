@@ -53,6 +53,8 @@ open class Diagram(val data: Data) {
         .sumOf { it.value.toDouble() }
         .toFloat()
 
+    val labels = data.map { it.label }
+
     open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
         throw Exception("Unable to draw Diagram")
     }
@@ -237,24 +239,25 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
 
     fun drawHorizontalLabels(
         canvas: Canvas,
-        labels: List<String>,
         x0: Float,
         dx: Float,
         font: Font,
         y: Float,
         drawMarks: Boolean,
     ) {
+        val labelRects = labels.map { label -> font.measureText(label) }
+        val labelWidths = labelRects.map { rect -> rect.width }
+        val labelHeights = labelRects.map { rect -> rect.height }
+        val maxLabelHeight = labelHeights.maxOf { it }
         for ((i, label) in labels.withIndex()) {
             val xMid = x0 + dx * i
-            val labelWidth = font.measureTextWidth(label, BLACK_FILL_PAINT)
-            val labelHeight = font.measureText(label, BLACK_FILL_PAINT).height
             if (drawMarks) {
                 canvas.drawLine(xMid, y + 3f, xMid, y - 3f, BLACK_FILL_PAINT)
             }
             canvas.drawString(
                 label,
-                xMid - labelWidth / 2,
-                y + labelHeight * 1.5f,
+                xMid - labelWidths[i] / 2,
+                y + maxLabelHeight + 5f,
                 font,
                 BLACK_FILL_PAINT
             )
@@ -267,8 +270,6 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
     private val barPaint = fillPaintByColorCode(0xFF4F86C6.toInt())
 
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
-        // TODO("Auto bar width")
-
         val font = FONT.makeWithSize(sz * 0.03f).apply {
             isEmboldened = true
         }
@@ -276,8 +277,12 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
 
         // Draw bars
         val yCoords = getYCoords(y0, y1)
-        val barWidth = sz * 0.2f
-        val xStep = sz * 0.3f
+        val maxLabelWidth = labels.maxOf { label ->
+            font.measureTextWidth(label)
+        }
+        val barWidth = max(maxLabelWidth + 2f, sz * 0.12f)
+        val xGap = sz * 0.05f
+        val xStep = barWidth + xGap
         for (i in data.indices) {
             val x = x0 + xStep * i
             val y = yCoords[i]
@@ -288,7 +293,6 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
 
         drawHorizontalLabels(
             canvas,
-            data.map { it.label },
             x0 + barWidth / 2,
             xStep,
             font,
@@ -320,13 +324,17 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
             strokeWidth = 0.012f * sz
         }
 
-        val xMargin = sz * 0.05f
-        val x1 = x0 + xMargin
-        val y1 = y0 + sz
 
         // Draw lines and points
+        val y1 = y0 + sz
         val yCoords = getYCoords(y0, y1)
-        val xStep = sz * 0.15f
+        val maxLabelWidth = labels.maxOf { label ->
+            font.measureTextWidth(label)
+        }
+
+        val xMargin = max(maxLabelWidth / 2, sz * 0.05f)
+        val x1 = x0 + xMargin
+        val xStep = max(maxLabelWidth, sz * 0.15f)
         val points = data.mapIndexed { i, _ ->
             Pair(x1 + xStep * i, yCoords[i])
         }
@@ -350,7 +358,6 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
 
         drawHorizontalLabels(
             canvas,
-            data.map { it.label },
             x1,
             xStep,
             font,

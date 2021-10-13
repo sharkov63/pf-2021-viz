@@ -2,6 +2,7 @@ import java.io.File
 
 data class Options(val inputFile: File?, val diagramType: DiagramType, val outputFile: File?)
 
+// TODO("Add cropBottom option for line and bar diagrams")
 
 fun parseOptions(args: List<String>): Options? {
     if (args.size % 2 == 1) return null
