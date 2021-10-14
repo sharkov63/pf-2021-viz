@@ -344,13 +344,11 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
         }
 
 
-        // Draw lines and points
         val y1 = y0 + sz
         val yCoords = getYCoords(y0, y1)
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
         }
-
         val xMargin = max(maxLabelWidth / 2, sz * 0.05f)
         val x1 = x0 + xMargin
         val xStep = max(maxLabelWidth + sz * 0.035f, sz * 0.15f)
@@ -360,6 +358,17 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
         val pointsFlatten = points
             .flatMap { (x, y) -> listOf(x, y) }
             .toFloatArray()
+
+        drawHorizontalLabels(
+            canvas,
+            x1,
+            xStep,
+            font,
+            y1,
+            true,
+        )
+
+        // Draw lines and points
         canvas.drawPolygon(pointsFlatten, linePaint)
         points.forEach { (x, y) ->
             canvas.drawPoint(x, y, pointPaint)
@@ -372,15 +381,6 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
             x0,
             x1 + xStep * (data.size - 1) + xMargin,
             font,
-            true,
-        )
-
-        drawHorizontalLabels(
-            canvas,
-            x1,
-            xStep,
-            font,
-            y1,
             true,
         )
     }
