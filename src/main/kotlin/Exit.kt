@@ -1,5 +1,15 @@
 import kotlin.system.exitProcess
 
+/**
+ * This package contains exit functions, which print a certain message,
+ * and then call [exitProcess] with a corresponding exit status.
+ *
+ * Exit status 0 means the program finished with no errors.
+ * Exit status 1 means the program finished with an error.
+ */
+
+
+
 fun exitHelp() {
     TODO("Write help")
     exitProcess(0)

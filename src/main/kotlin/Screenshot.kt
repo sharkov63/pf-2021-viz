@@ -3,6 +3,13 @@ import org.jetbrains.skija.Image
 import java.io.File
 import java.nio.file.Files
 
+
+/**
+ * This component allows to take a snapshot of global [window]
+ * and save it to a PNG file.
+ */
+
+/* Aux functions for file creation */
 private fun ensureAncestorDirectories(file: File) {
     val parentPath = file.absoluteFile.parentFile.toPath()
     Files.createDirectories(parentPath)
@@ -12,6 +19,7 @@ private fun ensureFile(file: File) {
     ensureAncestorDirectories(file)
     file.createNewFile()
 }
+
 
 fun getScreenshotPNGData(): ByteArray? {
     val bitMap = window.layer.screenshot() ?: return null

@@ -1,6 +1,12 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
+/**
+ * This component contains [Diagram] classes,
+ * and their drawing algorithms.
+ */
+
+
 enum class DiagramType {
     BAR,
     PIE,
@@ -9,6 +15,10 @@ enum class DiagramType {
 
 val DEFAULT_DIAGRAM_TYPE = DiagramType.BAR
 
+
+/**
+ * Possible keywords to specify diagram type.
+ */
 val diagramTypeByDescription = mapOf(
     "default" to DEFAULT_DIAGRAM_TYPE,
     "bar" to DiagramType.BAR,
@@ -22,6 +32,8 @@ val diagramTypeByDescription = mapOf(
 )
 
 
+
+/* Paints */
 
 private fun fillPaintByColorCode(colorCode: Int) = Paint().apply {
     color = colorCode
@@ -37,19 +49,27 @@ val LIGHT_GREY_STROKE_PAINT = fillPaintByColorCode(0xFFAAAAAA.toInt()).apply {
     mode = PaintMode.STROKE
 }
 
+
+/* Fonts */
+
 val TYPEFACE = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
 val FONT = Font(TYPEFACE, 20f)
 
 
-
+/**
+ * Generic [Diagram] class.
+ *
+ * Contains only diagram [data] and some statistics,
+ * as well as [draw] function template.
+ */
 open class Diagram(val data: Data) {
     // TODO("Diagram title")
-    // TODO("Measure units")
     // TODO("Add selectable options")
 
     val values = data.map { it.value }
     val labels = data.map { it.label }
 
+    /* Stats */
     val minValue = values.minOf { it }
     val maxValue = values.maxOf { it }
     val sumValues = values
@@ -57,13 +77,24 @@ open class Diagram(val data: Data) {
         .toFloat()
 
 
+    /**
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     *
+     * This function should only be called
+     * on specific subclasses of [Diagram] class.
+     */
     open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
         throw Exception("Unable to draw Diagram")
     }
 }
 
+/**
+ * Pie diagram.
+ *
+ * Data with negative values or with zero sum is not allowed.
+ */
 class PieDiagram(data: Data) : Diagram(data) {
-    init {
+    init { // Check for data correctness
         val negativeElement = data.find { it.value < 0 }
         if (negativeElement != null) {
             exitNegativeValues(DiagramType.PIE, negativeElement)
@@ -74,8 +105,13 @@ class PieDiagram(data: Data) : Diagram(data) {
         }
     }
 
+
+    /**
+     * Forms a list of colors for diagram.
+     */
     private fun getPaints(sz: Int): List<Paint> {
         assert(sz > 0)
+        // Color pallet
         var rgbCodes = listOf(
             0xca3f3f,
             0xe0607e,
@@ -88,6 +124,7 @@ class PieDiagram(data: Data) : Diagram(data) {
             0xeace71,
             0xa75a39,
         )
+        // Ensure that first and last color are not equal
         if (sz > rgbCodes.size && sz % rgbCodes.size == 1) {
             rgbCodes = rgbCodes.dropLast(1)
         }
@@ -98,6 +135,10 @@ class PieDiagram(data: Data) : Diagram(data) {
         return rgbCodes.map { fillPaintByColorCode(it or 0xFF000000.toInt()) }
     }
 
+
+    /**
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     */
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
         val radius = sz / 2
         val font = FONT.makeWithSize(sz * 0.05f)
@@ -111,6 +152,7 @@ class PieDiagram(data: Data) : Diagram(data) {
 
         val paints = getPaints(data.size)
 
+        // Sectors (arcs) geometry
         val arcLens = values.map { (it * 360f / sumValues) }
         val arcStarts = arcLens.scan(0f) { s, arcLen -> s + arcLen }
 
@@ -177,15 +219,30 @@ class PieDiagram(data: Data) : Diagram(data) {
 }
 
 
+/**
+ * Diagram on a 2D plane:
+ * y-axis is for values;
+ * x-axis is for labels.
+ *
+ * [cropBottom] is a flag, which determines
+ * whenever the value axis should start from zero (cropBottom = false),
+ * or from the smallest value in data (cropBottom = true).
+ *
+ * Incorporates [BarDiagram] and [LineDiagram].
+ */
 open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
 
+    /**
+     * Calculate a somewhat pretty delta value for ruler measuring [range].
+     */
     private fun calcRulerStep(range: Float): Float {
         if (range == 0f) {
+            // degenerate case
             return 1f
         }
         val k = floor(log10(range)).toInt()
-        val d = 10f.pow(k)
-        return when {
+        val d = 10f.pow(k) // the largest power of ten <= range
+        return when { // divide if there are too few segments
             2 * d > range -> d / 10f
             3 * d > range -> d / 5f
             4 * d > range -> d / 2f
@@ -193,11 +250,14 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         }
     }
 
+    /* Value range depending on cropBottom */
     val rangeValues = if (cropBottom || minValue < 0) {
         maxValue - minValue
     } else {
         maxValue
     }
+
+    /* Ruler parameters */
     val rulerStep = calcRulerStep(rangeValues)
     val rulerBeginRel = if (cropBottom || minValue < 0) {
         floor(minValue / rulerStep).toInt()
@@ -210,10 +270,23 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
     val rulerRangeRel = rulerEndRel - rulerBeginRel
     val rulerRange = rulerEnd - rulerBegin
 
+
+    /**
+     * Get coordinates for value (y) axis on range [y0]..[y1]
+     */
     fun getYCoords(y0: Float, y1: Float): List<Float> {
         return data.map { y1 - (it.value - rulerBegin) / rulerRange * (y1 - y0) }
     }
 
+
+    /**
+     * Draw ruler on [canvas]
+     * with y-range [y0]..[y1],
+     * x-range [x0]..[x1],
+     * and number labels with [font].
+     *
+     * One can choose to [drawVerticalLine] or not.
+     */
     fun drawRuler(
         canvas: Canvas,
         y0: Float,
@@ -230,9 +303,15 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         if (drawVerticalLine) {
             canvas.drawLine(x0 - leak, y1, x0 - leak, y0 - leak, LIGHT_GREY_STROKE_PAINT)
         }
+
+        // Draw each of level lines
         for (i in rulerBeginRel..rulerEndRel) {
             val y = y1 - yStep * (i - rulerBeginRel)
+
+            // Draw line
             canvas.drawLine(x0 - leak, y, x1 + leak, y, LIGHT_GREY_STROKE_PAINT)
+
+            // Draw label
             val label = if (rulerStepIsInteger)
                 (rulerStep * i).toInt().toString()
             else
@@ -249,6 +328,16 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         }
     }
 
+
+    /**
+     * Draw labels on x-axis on [canvas]
+     * starting from x=[x0],
+     * with x-step [dx],
+     * with font [font],
+     * on y-level [y].
+     *
+     * One can choose to [drawMarks] or not (useful only for line diagram so far).
+     */
     fun drawHorizontalLabels(
         canvas: Canvas,
         x0: Float,
@@ -261,11 +350,17 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         val labelWidths = labelRects.map { rect -> rect.width }
         val labelHeights = labelRects.map { rect -> rect.height }
         val maxLabelHeight = labelHeights.maxOf { it }
+
+        // Draw each of the labels
         for ((i, label) in labels.withIndex()) {
             val xMid = x0 + dx * i
+
+            // Draw mark
             if (drawMarks) {
                 canvas.drawLine(xMid, y + 3f, xMid, y - 3f, BLACK_FILL_PAINT)
             }
+
+            // Draw label
             canvas.drawString(
                 label,
                 xMid - labelWidths[i] / 2,
@@ -278,23 +373,36 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
 
 }
 
+
+/**
+ * Bar diagram.
+ *
+ * Inherits from [PlaneDiagram].
+ *
+ * Data with negative values is not allowed.
+ */
 class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, cropBottom) {
-    init {
+    init { // Check for data correctness
         val negativeElement = data.find { it.value < 0 }
         if (negativeElement != null) {
             exitNegativeValues(DiagramType.BAR, negativeElement)
         }
     }
 
+    // Blue color for bars
     private val barPaint = fillPaintByColorCode(0xFF4F86C6.toInt())
 
+    /**
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     */
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+        // Bold labels
         val font = FONT.makeWithSize(sz * 0.03f).apply {
             isEmboldened = true
         }
         val y1 = y0 + sz
 
-        // Draw bars
+        // Prepare geometric values
         val yCoords = getYCoords(y0, y1)
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
@@ -302,13 +410,14 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
         val barWidth = max(maxLabelWidth + 2f, sz * 0.12f)
         val xGap = sz * 0.05f
         val xStep = barWidth + xGap
+        val x2 = x0 + xStep * (data.size - 1) + barWidth
+
+        // Draw bars
         for (i in data.indices) {
             val x = x0 + xStep * i
             val y = yCoords[i]
             canvas.drawRect(Rect(x, y, x + barWidth, y1), barPaint)
         }
-
-        val x2 = x0 + xStep * (data.size - 1) + barWidth
 
         drawHorizontalLabels(
             canvas,
@@ -332,18 +441,22 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
 
 class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, cropBottom) {
 
+    /**
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     */
     override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+        // Bold labels
         val font = FONT.makeWithSize(sz * 0.03f).apply {
             isEmboldened = true
         }
-        val linePaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply() {
+        val linePaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply {
             strokeWidth = 0.005f * sz
         }
-        val pointPaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply() {
-            strokeWidth = 0.012f * sz
+        val pointPaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply {
+            strokeWidth = 0.012f * sz // points are thicker than lines
         }
 
-
+        // Prepare geometric values
         val y1 = y0 + sz
         val yCoords = getYCoords(y0, y1)
         val maxLabelWidth = labels.maxOf { label ->

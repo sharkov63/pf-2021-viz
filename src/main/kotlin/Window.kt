@@ -8,8 +8,22 @@ import org.jetbrains.skiko.SkiaWindow
 import java.awt.Dimension
 import javax.swing.WindowConstants
 
+/**
+ * This component contains functions for working with [SkiaWindow] and [SkiaRenderer].
+ */
+
+
+/**
+ * Global [window].
+ *
+ * Currently, I found no way to make it not global:
+ * I couldn't extract it from Swing CoroutineScope
+ */
 val window = SkiaWindow()
 
+/**
+ * Create window and draw diagram on it.
+ */
 fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatchers.Swing) {
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
@@ -23,17 +37,17 @@ fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatche
     window.isVisible = true
 }
 
+/**
+ * A custom [SkiaRenderer] which would draw a diagram.
+ */
 class Renderer(val layer: SkiaLayer, val diagram: Diagram): SkiaRenderer {
-    val paint = Paint().apply {
-        color = 0xff9BC730L.toInt()
-        mode = PaintMode.FILL
-        strokeWidth = 1f
-    }
 
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
 
+        // Draw diagram only once.
+        // No need for layer.needRedraw()
         diagram.draw(canvas, 100f, 100f, 400f)
     }
 }
