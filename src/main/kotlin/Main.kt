@@ -1,5 +1,3 @@
-// TODO("Documentation")
-
 fun main(args: Array<String>) {
     // Check for help message
     if (args.isNotEmpty() && (args.first() == "-h" || args.first() == "--help")) {
