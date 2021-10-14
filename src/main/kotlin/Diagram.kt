@@ -51,8 +51,7 @@ val LIGHT_GREY_STROKE_PAINT = fillPaintByColorCode(0xFFAAAAAA.toInt()).apply {
 
 
 /* Fonts */
-
-val TYPEFACE = Typeface.makeFromFile("fonts/JetBrainsMono-Regular.ttf")
+val TYPEFACE = FontMgr.getDefault().matchFamilyStyle("Lucida Sans Unicode", FontStyle.NORMAL)
 val FONT = Font(TYPEFACE, 20f)
 
 
