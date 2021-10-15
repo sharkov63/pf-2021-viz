@@ -11,7 +11,21 @@ import kotlin.system.exitProcess
 
 
 fun exitHelp() {
-    TODO("Write help")
+    println("viz.jar is a program for drawing diagrams, based on skiko and skija libs.      ")
+    println("                                                                               ")
+    println("Usage:                                                                         ")
+    println("java -jar viz.jar [-i INPUT_FILE] [-d DIAGRAM_TYPE] [-o OUTPUT_FILE]           ")
+    println("                                                                               ")
+    println("If input file is not specified, or can't be read, the data is taken from stdin.")
+    println("Input format: each diagram record is on a separate line.                       ")
+    println("Each record consists of a text label and a real number, separated by spaces.   ")
+    println("                                                                               ")
+    println("Supported diagram types:                                                       ")
+    println("  BAR diagram (-d bar, -d column, -d histogram)                                ")
+    println("  LINE diagram (-d line, -d graph)                                             ")
+    println("  PIE diagram (-d pie, -d circle, -d round)                                    ")
+    println("                                                                               ")
+    println("If output file is specified, writes the diagram to this file in PNG format.    ")
     exitProcess(0)
 }
 
