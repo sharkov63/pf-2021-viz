@@ -4,7 +4,6 @@ fun main(args: Array<String>) {
         return exitHelp()
     }
 
-    // Get options
     val options = parseOptions(args.toList()) ?: return exitInvalidArgs()
 
     // Read data
@@ -13,20 +12,16 @@ fun main(args: Array<String>) {
     if (skippedRecords > 0) {
         println("$skippedRecords of those records are invalid and thus, omitted.")
     }
-
-    // Check for empty data
     if (data.isEmpty()) {
         return exitEmptyData()
     }
 
-    // Get diagram
     val diagram = when (options.diagramType) {
         DiagramType.BAR -> BarDiagram(data)
         DiagramType.PIE -> PieDiagram(data)
         DiagramType.LINE -> LineDiagram(data)
     }
 
-    // Entry point for SkiaWindow
     createDiagramWindow("pf-2021-viz", diagram)
 
     // PNG output

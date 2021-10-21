@@ -1,6 +1,8 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
+// TODO("Area diagram")
+
 /**
  * This component contains [Diagram] classes,
  * and their drawing algorithms.
@@ -14,7 +16,6 @@ enum class DiagramType {
 }
 
 val DEFAULT_DIAGRAM_TYPE = DiagramType.BAR
-
 
 /**
  * Possible keywords to specify diagram type.
@@ -50,9 +51,12 @@ val LIGHT_GREY_STROKE_PAINT = fillPaintByColorCode(0xFFAAAAAA.toInt()).apply {
 }
 
 
+
 /* Fonts */
 val TYPEFACE = FontMgr.getDefault().matchFamilyStyle("Lucida Sans Unicode", FontStyle.NORMAL)
 val FONT = Font(TYPEFACE, 20f)
+
+
 
 
 /**
@@ -61,7 +65,7 @@ val FONT = Font(TYPEFACE, 20f)
  * Contains only diagram [data] and some statistics,
  * as well as [draw] function template.
  */
-open class Diagram(val data: Data) {
+abstract class Diagram(val data: Data) {
     // TODO("Diagram title")
     // TODO("Add selectable options")
 
@@ -77,15 +81,16 @@ open class Diagram(val data: Data) {
 
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
      *
      * This function should only be called
      * on specific subclasses of [Diagram] class.
      */
-    open fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
-        throw Exception("Unable to draw Diagram")
-    }
+    abstract fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float)
 }
+
+
+
 
 /**
  * Pie diagram.
@@ -93,6 +98,26 @@ open class Diagram(val data: Data) {
  * Data with negative values or with zero sum is not allowed.
  */
 class PieDiagram(data: Data) : Diagram(data) {
+
+    val FONT_SIZE_COEFFICIENT = 0.05f
+    val BLANK_WIDTH_PROPORTION = 0.1f
+    val COLOR_BOX_HEIGHT_PROPORTION = 0.7f
+    val LABEL_Y_STEP_PROPORTION = 1.3f
+    val LABEL_LINE_INDENT = 10f
+
+    val COLOR_PALLET = listOf(
+        0xca3f3f,
+        0xe0607e,
+        0xab92bf,
+        0x655a7c,
+        0x696d7d,
+        0x68b0ab,
+        0x8fc0a9,
+        0xc8d5b9,
+        0xeace71,
+        0xa75a39,
+    )
+
     init { // Check for data correctness
         val negativeElement = data.find { it.value < 0 }
         if (negativeElement != null) {
@@ -108,26 +133,15 @@ class PieDiagram(data: Data) : Diagram(data) {
     /**
      * Forms a list of colors for diagram.
      */
-    private fun getPaints(sz: Int): List<Paint> {
-        assert(sz > 0)
-        // Color pallet
-        var rgbCodes = listOf(
-            0xca3f3f,
-            0xe0607e,
-            0xab92bf,
-            0x655a7c,
-            0x696d7d,
-            0x68b0ab,
-            0x8fc0a9,
-            0xc8d5b9,
-            0xeace71,
-            0xa75a39,
-        )
+    private fun getPaints(records: Int): List<Paint> {
+        assert(records > 0)
+
+        var rgbCodes = COLOR_PALLET
         // Ensure that first and last color are not equal
-        if (sz > rgbCodes.size && sz % rgbCodes.size == 1) {
+        if (records > rgbCodes.size && records % rgbCodes.size == 1) {
             rgbCodes = rgbCodes.dropLast(1)
         }
-        val k = rgbCodes.size / sz
+        val k = rgbCodes.size / records
         if (k >= 2) { // make colors more distinct
             rgbCodes = rgbCodes.filterIndexed { idx, _ -> idx % k == 0 }
         }
@@ -136,18 +150,18 @@ class PieDiagram(data: Data) : Diagram(data) {
 
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
-        val radius = sz / 2
-        val font = FONT.makeWithSize(sz * 0.05f)
+    override fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float) {
+        val radius = size / 2
+        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
-        val blankWidth = sz * 0.1f
+        val blankWidth = size * BLANK_WIDTH_PROPORTION
         val x1 = x0 + maxLabelWidth + blankWidth
         val y1 = y0
-        val xc = x1 + sz / 2
-        val yc = y1 + sz / 2
+        val xc = x1 + size / 2
+        val yc = y1 + size / 2
 
         val paints = getPaints(data.size)
 
@@ -162,8 +176,8 @@ class PieDiagram(data: Data) : Diagram(data) {
             canvas.drawArc(
                 x1,
                 y1,
-                x1 + sz,
-                y1 + sz,
+                x1 + size,
+                y1 + size,
                 arcStart,
                 arcLen,
                 true,
@@ -172,9 +186,9 @@ class PieDiagram(data: Data) : Diagram(data) {
         }
 
         // Draw labels
-        val colorBoxSz = maxLabelHeight * 0.7f
+        val colorBoxSz = maxLabelHeight * COLOR_BOX_HEIGHT_PROPORTION
         val colorBoxMarginX = (maxLabelHeight - colorBoxSz) / 2
-        val yStep = maxLabelHeight * 1.3f
+        val yStep = maxLabelHeight * LABEL_Y_STEP_PROPORTION
         var yCur = y0 + yStep
         for (i in labels.indices) {
             val label = labels[i]
@@ -201,8 +215,8 @@ class PieDiagram(data: Data) : Diagram(data) {
                 val y = yc + radius / 2 * sin(arcMidRad)
                 canvas.drawPolygon(
                     floatArrayOf(
-                        x0 + maxLabelHeight + labelWidth + 10f, yCur - labelHeight / 2,
-                        x0 + maxLabelHeight + maxLabelWidth + 10f, yCur - labelHeight / 2,
+                        x0 + maxLabelHeight + labelWidth + LABEL_LINE_INDENT, yCur - labelHeight / 2,
+                        x0 + maxLabelHeight + maxLabelWidth + LABEL_LINE_INDENT, yCur - labelHeight / 2,
                         x, y,
                     ),
                     LIGHT_GREY_STROKE_PAINT,
@@ -229,7 +243,38 @@ class PieDiagram(data: Data) : Diagram(data) {
  *
  * Incorporates [BarDiagram] and [LineDiagram].
  */
-open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
+abstract class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
+
+    val FONT_SIZE_COEFFICIENT = 0.03f
+    val RULER_LEAK = 5f
+    val MARK_LEAK = 3f
+    val HORIZONTAL_LABELS_INDENT = 5f
+
+    val rulerStep: Float
+    val rulerBegin: Float
+    val rulerRangeRel: Int
+
+    init {
+        /* Value range depending on cropBottom */
+        val rangeValues = if (cropBottom || minValue < 0) {
+            maxValue - minValue
+        } else {
+            maxValue
+        }
+
+        /* Ruler parameters */
+        rulerStep = calcRulerStep(rangeValues)
+        val rulerBeginRel = if (cropBottom || minValue < 0) {
+            floor(minValue / rulerStep).toInt()
+        } else {
+            0
+        }
+        rulerBegin = rulerBeginRel * rulerStep
+        val rulerEndRel = floor(maxValue / rulerStep).toInt() + 1
+        rulerRangeRel = rulerEndRel - rulerBeginRel
+    }
+
+
 
     /**
      * Calculate a somewhat pretty delta value for ruler measuring [range].
@@ -249,32 +294,12 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         }
     }
 
-    /* Value range depending on cropBottom */
-    val rangeValues = if (cropBottom || minValue < 0) {
-        maxValue - minValue
-    } else {
-        maxValue
-    }
-
-    /* Ruler parameters */
-    val rulerStep = calcRulerStep(rangeValues)
-    val rulerBeginRel = if (cropBottom || minValue < 0) {
-        floor(minValue / rulerStep).toInt()
-    } else {
-        0
-    }
-    val rulerBegin = rulerBeginRel * rulerStep
-    val rulerEndRel = floor(maxValue / rulerStep).toInt() + 1
-    val rulerEnd = rulerEndRel * rulerStep
-    val rulerRangeRel = rulerEndRel - rulerBeginRel
-    val rulerRange = rulerEnd - rulerBegin
-
 
     /**
      * Get coordinates for value (y) axis on range [y0]..[y1]
      */
     fun getYCoords(y0: Float, y1: Float): List<Float> {
-        return data.map { y1 - (it.value - rulerBegin) / rulerRange * (y1 - y0) }
+        return data.map { y1 - (it.value - rulerBegin) / (rulerStep * rulerRangeRel) * (y1 - y0) }
     }
 
 
@@ -298,28 +323,28 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         val yStep = (y1 - y0) / rulerRangeRel
         val rulerStepIsInteger = floor(rulerStep) == rulerStep
         val decimals = max(0, -floor(log10(rulerStep)).toInt())
-        val leak = 5f
         if (drawVerticalLine) {
-            canvas.drawLine(x0 - leak, y1, x0 - leak, y0 - leak, LIGHT_GREY_STROKE_PAINT)
+            canvas.drawLine(x0 - RULER_LEAK, y1, x0 - RULER_LEAK, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
         }
 
         // Draw each of level lines
-        for (i in rulerBeginRel..rulerEndRel) {
-            val y = y1 - yStep * (i - rulerBeginRel)
+        for (i in 0..rulerRangeRel) {
+            val rulerValue = rulerBegin + i * rulerStep
+            val y = y1 - yStep * i
 
             // Draw line
-            canvas.drawLine(x0 - leak, y, x1 + leak, y, LIGHT_GREY_STROKE_PAINT)
+            canvas.drawLine(x0 - RULER_LEAK, y, x1 + RULER_LEAK, y, LIGHT_GREY_STROKE_PAINT)
 
             // Draw label
             val label = if (rulerStepIsInteger)
-                (rulerStep * i).toInt().toString()
+                rulerValue.toInt().toString()
             else
-                "%.${decimals}f".format(rulerStep * i)
+                "%.${decimals}f".format(rulerValue)
             val labelWidth = font.measureTextWidth(label)
             val labelHeight = font.measureText(label).height
             canvas.drawString(
                 label,
-                x0 - labelWidth - 2 * leak,
+                x0 - labelWidth - 2 * RULER_LEAK,
                 y + labelHeight / 2,
                 font,
                 BLACK_FILL_PAINT
@@ -356,14 +381,14 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
 
             // Draw mark
             if (drawMarks) {
-                canvas.drawLine(xMid, y + 3f, xMid, y - 3f, BLACK_FILL_PAINT)
+                canvas.drawLine(xMid, y + MARK_LEAK, xMid, y - MARK_LEAK, BLACK_FILL_PAINT)
             }
 
             // Draw label
             canvas.drawString(
                 label,
                 xMid - labelWidths[i] / 2,
-                y + maxLabelHeight + 5f,
+                y + maxLabelHeight + HORIZONTAL_LABELS_INDENT,
                 font,
                 BLACK_FILL_PAINT
             )
@@ -381,6 +406,14 @@ open class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
  * Data with negative values is not allowed.
  */
 class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, cropBottom) {
+
+    // Blue color for bars
+    val BAR_PAINT = fillPaintByColorCode(0xFF4F86C6.toInt())
+
+    val MIN_BAR_WIDTH_COEFFICIENT = 0.12f
+    val BAR_PADDING = 2f
+    val X_GAP_COEFFICIENT = 0.05f
+
     init { // Check for data correctness
         val negativeElement = data.find { it.value < 0 }
         if (negativeElement != null) {
@@ -388,26 +421,24 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
         }
     }
 
-    // Blue color for bars
-    private val barPaint = fillPaintByColorCode(0xFF4F86C6.toInt())
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+    override fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float) {
         // Bold labels
-        val font = FONT.makeWithSize(sz * 0.03f).apply {
+        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT).apply {
             isEmboldened = true
         }
-        val y1 = y0 + sz
+        val y1 = y0 + size
 
         // Prepare geometric values
         val yCoords = getYCoords(y0, y1)
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
         }
-        val barWidth = max(maxLabelWidth + 2f, sz * 0.12f)
-        val xGap = sz * 0.05f
+        val barWidth = max(maxLabelWidth + BAR_PADDING, size * MIN_BAR_WIDTH_COEFFICIENT)
+        val xGap = size * X_GAP_COEFFICIENT
         val xStep = barWidth + xGap
         val x2 = x0 + xStep * (data.size - 1) + barWidth
 
@@ -415,7 +446,7 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
         for (i in data.indices) {
             val x = x0 + xStep * i
             val y = yCoords[i]
-            canvas.drawRect(Rect(x, y, x + barWidth, y1), barPaint)
+            canvas.drawRect(Rect(x, y, x + barWidth, y1), BAR_PAINT)
         }
 
         drawHorizontalLabels(
@@ -440,30 +471,38 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
 
 class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, cropBottom) {
 
+    val GRAPH_PAINT = fillPaintByColorCode(0xFF4F86C6.toInt())
+
+    val LINE_STROKE_WIDTH_COEFFICIENT = 0.005f
+    val POINT_STROKE_WIDTH_COEFFICIENT = 0.012f
+    val MIN_X_MARGIN_COEFFICIENT = 0.05f
+    val MIN_X_STEP_COEFFICIENT = 0.15f
+    val X_STEP_INDENT_COEFFICIENT = 0.035f
+
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [sz].
+     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float, sz: Float) {
+    override fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float) {
         // Bold labels
-        val font = FONT.makeWithSize(sz * 0.03f).apply {
+        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT).apply {
             isEmboldened = true
         }
-        val linePaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply {
-            strokeWidth = 0.005f * sz
+        val linePaint = GRAPH_PAINT.apply {
+            strokeWidth = LINE_STROKE_WIDTH_COEFFICIENT * size
         }
-        val pointPaint = fillPaintByColorCode(0xFF4F86C6.toInt()).apply {
-            strokeWidth = 0.012f * sz // points are thicker than lines
+        val pointPaint = GRAPH_PAINT.apply {
+            strokeWidth = POINT_STROKE_WIDTH_COEFFICIENT * size
         }
 
         // Prepare geometric values
-        val y1 = y0 + sz
+        val y1 = y0 + size
         val yCoords = getYCoords(y0, y1)
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
         }
-        val xMargin = max(maxLabelWidth / 2, sz * 0.05f)
+        val xMargin = max(maxLabelWidth / 2, size * MIN_X_MARGIN_COEFFICIENT)
         val x1 = x0 + xMargin
-        val xStep = max(maxLabelWidth + sz * 0.035f, sz * 0.15f)
+        val xStep = max(maxLabelWidth + size * X_STEP_INDENT_COEFFICIENT, size * MIN_X_STEP_COEFFICIENT)
         val points = data.mapIndexed { i, _ ->
             Pair(x1 + xStep * i, yCoords[i])
         }
