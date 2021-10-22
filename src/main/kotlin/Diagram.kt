@@ -58,6 +58,15 @@ val FONT = Font(TYPEFACE, 20f)
 
 
 
+fun unionRects(rect1: Rect, rect2: Rect) = Rect(
+    min(rect1.left, rect2.left),
+    min(rect1.top, rect2.top),
+    max(rect1.right, rect2.right),
+    max(rect1.bottom, rect2.bottom),
+)
+
+
+
 
 /**
  * Generic [Diagram] class.
@@ -87,6 +96,12 @@ abstract class Diagram(val data: Data) {
      * on specific subclasses of [Diagram] class.
      */
     abstract fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float)
+
+    /**
+     * Predicts bounding rectangle,
+     * if the diagram will be drawn at x0 = y0 = 0 with size [size]
+     */
+    abstract fun bounds(size: Float): Rect
 }
 
 
@@ -147,6 +162,7 @@ class PieDiagram(data: Data) : Diagram(data) {
         }
         return rgbCodes.map { fillPaintByColorCode(it or 0xFF000000.toInt()) }
     }
+
 
 
     /**
@@ -228,6 +244,21 @@ class PieDiagram(data: Data) : Diagram(data) {
 
             yCur += yStep
         }
+    }
+
+    override fun bounds(size: Float): Rect {
+        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT)
+        val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
+        val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
+        val blankWidth = size * BLANK_WIDTH_PROPORTION
+        val yStep = maxLabelHeight * LABEL_Y_STEP_PROPORTION
+
+        return Rect(
+            0f,
+            0f,
+            maxLabelWidth + blankWidth + size,
+            max(size, yStep * data.size),
+        )
     }
 }
 
@@ -358,6 +389,15 @@ abstract class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         }
     }
 
+    fun rulerBound(size: Float, font: Font): Rect {
+        val maxLabelWidth = rulerLabels.maxOf { font.measureTextWidth(it) }
+        return Rect(
+            -maxLabelWidth - 2 * RULER_LEAK,
+            0f,
+            0f,
+            size + font.measureText(rulerLabels.first()).height
+        )
+    }
 
     /**
      * Draw labels on x-axis on [canvas]
@@ -401,6 +441,19 @@ abstract class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         }
     }
 
+    fun horizontalLabelsBound(size: Float, dx: Float, y: Float, font: Font): Rect {
+        val labelRects = labels.map { label -> font.measureText(label) }
+        val labelWidths = labelRects.map { rect -> rect.width }
+        val labelHeights = labelRects.map { rect -> rect.height }
+        val maxLabelHeight = labelHeights.maxOf { it }
+
+        return Rect(
+            0f,
+            0f,
+            dx * labels.size + labelWidths.last(),
+            y + maxLabelHeight + HORIZONTAL_LABELS_INDENT,
+        )
+    }
 }
 
 
@@ -473,6 +526,23 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
             font,
         )
     }
+
+    override fun bounds(size: Float): Rect {
+        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT).apply {
+            isEmboldened = true
+        }
+
+        val maxLabelWidth = labels.maxOf { label ->
+            font.measureTextWidth(label)
+        }
+        val barWidth = max(maxLabelWidth + BAR_PADDING, size * MIN_BAR_WIDTH_COEFFICIENT)
+        val xGap = size * X_GAP_COEFFICIENT
+        val xStep = barWidth + xGap
+
+        val rulerBound = rulerBound(size, font)
+        val horizontalLabelsBound = horizontalLabelsBound(size, xStep, size, font)
+        return unionRects(rulerBound, horizontalLabelsBound)
+    }
 }
 
 class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, cropBottom) {
@@ -540,5 +610,20 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
             font,
             true,
         )
+    }
+
+    override fun bounds(size: Float): Rect {
+        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT).apply {
+            isEmboldened = true
+        }
+
+        val maxLabelWidth = labels.maxOf { label ->
+            font.measureTextWidth(label)
+        }
+        val xStep = max(maxLabelWidth + size * X_STEP_INDENT_COEFFICIENT, size * MIN_X_STEP_COEFFICIENT)
+
+        val rulerBound = rulerBound(size, font)
+        val horizontalLabelsBound = horizontalLabelsBound(size, xStep, size, font)
+        return unionRects(rulerBound, horizontalLabelsBound)
     }
 }
