@@ -13,24 +13,26 @@ import javax.swing.WindowConstants
  */
 
 
-/**
- * Global [window].
- *
- * Currently, I found no way to make it not global:
- * I couldn't extract it from Swing CoroutineScope
- */
-val window = SkiaWindow()
+
+const val WINDOW_PADDING = 5
+const val CANVAS_UNIT = 1.1f
 
 /**
  * Create window and draw diagram on it.
  */
-fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatchers.Swing) {
+fun createDiagramWindow(title: String, diagram: Diagram, size: Float) = runBlocking(Dispatchers.Swing) {
+    val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
 
-    window.layer.renderer = Renderer(window.layer, diagram)
+    window.layer.renderer = Renderer(window.layer, diagram, size)
 
-    window.preferredSize = Dimension(1200, 600)
+    val bounds = diagram.bounds(size)
+
+    window.preferredSize = Dimension(
+        (bounds.width * CANVAS_UNIT + 2 * WINDOW_PADDING).toInt(),
+        (bounds.height * CANVAS_UNIT + 2 * WINDOW_PADDING).toInt()
+    )
     window.minimumSize = Dimension(100, 100)
     window.pack()
     window.layer.awaitRedraw()
@@ -40,14 +42,16 @@ fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatche
 /**
  * A custom [SkiaRenderer] which would draw a diagram.
  */
-class Renderer(val layer: SkiaLayer, val diagram: Diagram): SkiaRenderer {
+class Renderer(val layer: SkiaLayer, val diagram: Diagram, val size: Float): SkiaRenderer {
 
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
 
+        val bounds = diagram.bounds(size)
+
         // Draw diagram only once.
         // No need for layer.needRedraw()
-        diagram.draw(canvas, 100f, 100f, 400f)
+        diagram.draw(canvas, WINDOW_PADDING -bounds.left, WINDOW_PADDING - bounds.top, size)
     }
 }

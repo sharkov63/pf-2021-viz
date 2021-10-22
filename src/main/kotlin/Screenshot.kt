@@ -1,13 +1,14 @@
-import org.jetbrains.skija.EncodedImageFormat
-import org.jetbrains.skija.Image
+import org.jetbrains.skija.*
 import java.io.File
 import java.nio.file.Files
 
 
 /**
- * This component allows to take a snapshot of global [window]
- * and save it to a PNG file.
+ * This component allows to write PNG data to a file.
  */
+
+const val PADDING = 5
+
 
 /* Aux functions for file creation */
 private fun ensureAncestorDirectories(file: File) {
@@ -20,20 +21,9 @@ private fun ensureFile(file: File) {
     file.createNewFile()
 }
 
-
-fun getScreenshotPNGData(): ByteArray? {
-    val bitMap = window.layer.screenshot() ?: return null
-    val image = Image.makeFromBitmap(bitMap)
-    val pngData = image.encodeToData(EncodedImageFormat.PNG) ?: return null
-    return pngData.bytes
-}
-
-fun writeScreenshotToFile(file: File) {
-    val bytes = getScreenshotPNGData()
-    if (bytes == null) {
-        println("Couldn't extract PNG byte data from window layer.")
-        return
-    }
+fun writeDiagramToFile(file: File, diagram: Diagram, size: Float) {
+    val bytes = diagram.getPNGData(size)
+    requireNotNull(bytes)
     ensureFile(file)
     if (!file.canWrite()) {
         println("Cannot write to file \"${file.path}\"")

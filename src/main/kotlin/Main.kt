@@ -1,3 +1,7 @@
+import org.jetbrains.skija.*
+
+var BITMAP = Bitmap()
+
 fun main(args: Array<String>) {
     // Check for help message
     if (args.isNotEmpty() && (args.first() == "-h" || args.first() == "--help")) {
@@ -22,10 +26,12 @@ fun main(args: Array<String>) {
         DiagramType.LINE -> LineDiagram(data)
     }
 
-    createDiagramWindow("pf-2021-viz", diagram)
+    val size = 400f
 
     // PNG output
     if (options.outputFile != null) {
-        writeScreenshotToFile(options.outputFile)
+        writeDiagramToFile(options.outputFile, diagram, size)
     }
+
+    createDiagramWindow("pf-2021-viz", diagram, size)
 }

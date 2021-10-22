@@ -102,6 +102,30 @@ abstract class Diagram(val data: Data) {
      * if the diagram will be drawn at x0 = y0 = 0 with size [size]
      */
     abstract fun bounds(size: Float): Rect
+
+
+    /**
+     * Returns the PNG data of the diagram.
+     */
+    fun getPNGData(size: Float): ByteArray? {
+        val diagramBounds = bounds(size)
+
+        val bitmap = Bitmap()
+        bitmap.imageInfo = ImageInfo(
+            diagramBounds.width.toInt() + 2 * PADDING,
+            diagramBounds.height.toInt() + 2 * PADDING,
+            ColorType.BGRA_8888,
+            ColorAlphaType.PREMUL
+        )
+        bitmap.allocPixels()
+        val canvas = Canvas(bitmap)
+        draw(canvas, -diagramBounds.left + PADDING, -diagramBounds.top + PADDING, size)
+        canvas.readPixels(bitmap, 0, 0)
+
+        val image = Image.makeFromBitmap(bitmap)
+        val pngData = image.encodeToData(EncodedImageFormat.PNG) ?: return null
+        return pngData.bytes
+    }
 }
 
 
@@ -547,7 +571,7 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
 
 class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, cropBottom) {
 
-    val GRAPH_PAINT = fillPaintByColorCode(0xFF4F86C6.toInt())
+    val GRAPH_COLOR_CODE = 0xFF4F86C6.toInt()
 
     val LINE_STROKE_WIDTH_COEFFICIENT = 0.005f
     val POINT_STROKE_WIDTH_COEFFICIENT = 0.012f
@@ -563,10 +587,10 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
         val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT).apply {
             isEmboldened = true
         }
-        val linePaint = GRAPH_PAINT.apply {
+        val linePaint = fillPaintByColorCode(GRAPH_COLOR_CODE).apply {
             strokeWidth = LINE_STROKE_WIDTH_COEFFICIENT * size
         }
-        val pointPaint = GRAPH_PAINT.apply {
+        val pointPaint = fillPaintByColorCode(GRAPH_COLOR_CODE).apply {
             strokeWidth = POINT_STROKE_WIDTH_COEFFICIENT * size
         }
 
