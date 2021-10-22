@@ -253,6 +253,7 @@ abstract class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
     val rulerStep: Float
     val rulerBegin: Float
     val rulerRangeRel: Int
+    val rulerLabels: List<String>
 
     init {
         /* Value range depending on cropBottom */
@@ -272,6 +273,17 @@ abstract class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         rulerBegin = rulerBeginRel * rulerStep
         val rulerEndRel = floor(maxValue / rulerStep).toInt() + 1
         rulerRangeRel = rulerEndRel - rulerBeginRel
+
+        /* Calc ruler labels */
+        val rulerStepIsInteger = floor(rulerStep) == rulerStep
+        val decimals = max(0, -floor(log10(rulerStep)).toInt())
+        rulerLabels = List(rulerRangeRel + 1) {
+            val rulerValue = rulerBegin + it * rulerStep
+            if (rulerStepIsInteger)
+                rulerValue.toInt().toString()
+            else
+                "%.${decimals}f".format(rulerValue)
+        }
     }
 
 
@@ -321,25 +333,19 @@ abstract class PlaneDiagram(data: Data, cropBottom: Boolean): Diagram(data) {
         drawVerticalLine: Boolean = false,
     ) {
         val yStep = (y1 - y0) / rulerRangeRel
-        val rulerStepIsInteger = floor(rulerStep) == rulerStep
-        val decimals = max(0, -floor(log10(rulerStep)).toInt())
         if (drawVerticalLine) {
             canvas.drawLine(x0 - RULER_LEAK, y1, x0 - RULER_LEAK, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
         }
 
         // Draw each of level lines
         for (i in 0..rulerRangeRel) {
-            val rulerValue = rulerBegin + i * rulerStep
             val y = y1 - yStep * i
 
             // Draw line
             canvas.drawLine(x0 - RULER_LEAK, y, x1 + RULER_LEAK, y, LIGHT_GREY_STROKE_PAINT)
 
             // Draw label
-            val label = if (rulerStepIsInteger)
-                rulerValue.toInt().toString()
-            else
-                "%.${decimals}f".format(rulerValue)
+            val label = rulerLabels[i]
             val labelWidth = font.measureTextWidth(label)
             val labelHeight = font.measureText(label).height
             canvas.drawString(
