@@ -46,13 +46,16 @@ internal class AllSamples {
             diagramCodes.forEach { diagramCode ->
                 val answerFileName = getAnswerFileName(inputFile, diagramCode)
                 val outputFileName = getOutputFileName(inputFile, diagramCode)
+                val answerFile = File(answerFileName)
+                val outputFile = File(outputFileName)
                 try {
                     main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", outputFileName))
-                    val answerFile = File(answerFileName)
-                    val outputFile = File(outputFileName)
                     assertEquals(answerFile.readText(), outputFile.readText())
                 } catch (ex: Exception) {
 
+                } finally {
+                    if (outputFile.exists())
+                        outputFile.delete()
                 }
             }
         }
