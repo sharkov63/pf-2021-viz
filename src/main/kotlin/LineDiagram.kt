@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Inherits from [PlaneDiagram]
  */
-class LineDiagram(data: Data) : PlaneDiagram(data, true, true, true) {
+class LineDiagram(data: Data, size: Float) : PlaneDiagram(data, size, true, true, true) {
 
     companion object {
         const val GRAPH_COLOR_CODE = 0xFF4F86C6.toInt()
@@ -20,9 +20,9 @@ class LineDiagram(data: Data) : PlaneDiagram(data, true, true, true) {
     }
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
+     * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float) {
+    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
         val font = getFontBySize(size)
         val linePaint = fillPaintByColorCode(GRAPH_COLOR_CODE).apply {
             strokeWidth = LINE_STROKE_WIDTH_COEFFICIENT * size
@@ -58,7 +58,10 @@ class LineDiagram(data: Data) : PlaneDiagram(data, true, true, true) {
         ruler.draw(canvas, x0, y0, size, x1 + xStep * (data.size - 1) + xMargin)
     }
 
-    override fun bounds(size: Float): Rect {
+    /**
+     * Get bounding [Rect] of diagram.
+     */
+    override fun bounds(): Rect {
         val font = getFontBySize(size)
 
         val maxLabelWidth = labels.maxOf { label ->

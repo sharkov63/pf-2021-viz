@@ -20,17 +20,17 @@ const val CANVAS_UNIT = 1.1f
 
 
 /**
- * Create a window and draw [diagram] with size [size] on it.
+ * Create a window and draw [diagram] on it.
  */
-fun createDiagramWindow(title: String, diagram: Diagram, size: Float) = runBlocking(Dispatchers.Swing) {
+fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow()
     window.defaultCloseOperation = WindowConstants.DISPOSE_ON_CLOSE
     window.title = title
 
-    window.layer.renderer = Renderer(window.layer, diagram, size)
+    window.layer.renderer = Renderer(window.layer, diagram)
 
     // Predict diagram size in window
-    val bounds = diagram.bounds(size)
+    val bounds = diagram.bounds()
     window.preferredSize = Dimension(
         (bounds.width * CANVAS_UNIT + 2 * WINDOW_PADDING).toInt(),
         (bounds.height * CANVAS_UNIT + 2 * WINDOW_PADDING).toInt()
@@ -43,15 +43,15 @@ fun createDiagramWindow(title: String, diagram: Diagram, size: Float) = runBlock
 
 
 /**
- * A custom [SkiaRenderer] which would draw [diagram] with specified [size].
+ * A custom [SkiaRenderer] which would draw [diagram].
  */
-class Renderer(val layer: SkiaLayer, val diagram: Diagram, val size: Float): SkiaRenderer {
+class Renderer(val layer: SkiaLayer, val diagram: Diagram): SkiaRenderer {
 
     override fun onRender(canvas: Canvas, width: Int, height: Int, nanoTime: Long) {
         val contentScale = layer.contentScale
         canvas.scale(contentScale, contentScale)
 
-        val bounds = diagram.bounds(size)
+        val bounds = diagram.bounds()
 
         // Draw diagram only once.
         // No need for layer.needRedraw()
@@ -59,7 +59,6 @@ class Renderer(val layer: SkiaLayer, val diagram: Diagram, val size: Float): Ski
             canvas,
             WINDOW_PADDING - bounds.left,
             WINDOW_PADDING - bounds.top,
-            size
         )
     }
 }

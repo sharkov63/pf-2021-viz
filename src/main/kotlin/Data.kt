@@ -9,7 +9,7 @@ import kotlin.text.*
 
 /**
  * A single diagram record (component), consisting of
- * its' name [label] and [value].
+ * it's name [label] and [value].
  */
 data class DataElement(val label: String, val value: Float)
 

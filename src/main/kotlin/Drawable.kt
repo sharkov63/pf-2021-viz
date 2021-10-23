@@ -3,28 +3,28 @@ import org.jetbrains.skija.*
 /**
  * [Drawable] is anything that can be drawn on skija [Canvas].
  */
-abstract class Drawable {
+abstract class Drawable(val size: Float) {
 
     companion object {
         const val PNG_PADDING = 5
     }
 
     /**
-     * Draws the object on [canvas] with pivot point at ([x0], [y0]) with size [size].
+     * Draws the object on [canvas] with pivot point at ([x0], [y0]).
      */
-    abstract fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float)
+    abstract fun draw(canvas: Canvas, x0: Float, y0: Float)
 
     /**
      * Predicts bounding rectangle,
-     * if the pivot point is at (0, 0) and size = [size]
+     * if the pivot point is at (0, 0)
      */
-    abstract fun bounds(size: Float): Rect
+    abstract fun bounds(): Rect
 
     /**
      * Returns the PNG data of the object.
      */
-    fun getPNGData(size: Float): ByteArray? {
-        val bounds = bounds(size)
+    fun getPNGData(): ByteArray? {
+        val bounds = bounds()
 
         val bitmap = Bitmap()
         bitmap.imageInfo = ImageInfo(
@@ -35,7 +35,7 @@ abstract class Drawable {
         )
         bitmap.allocPixels()
         val canvas = Canvas(bitmap)
-        draw(canvas, -bounds.left + PNG_PADDING, -bounds.top + PNG_PADDING, size)
+        draw(canvas, -bounds.left + PNG_PADDING, -bounds.top + PNG_PADDING)
         canvas.readPixels(bitmap, 0, 0)
 
         val image = Image.makeFromBitmap(bitmap)

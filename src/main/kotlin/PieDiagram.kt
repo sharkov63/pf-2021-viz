@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Data with negative values or with zero-sum is not allowed.
  */
-class PieDiagram(data: Data) : Diagram(data) {
+class PieDiagram(data: Data, size: Float) : Diagram(data, size) {
 
     companion object {
         const val FONT_SIZE_COEFFICIENT = 0.05f
@@ -66,9 +66,9 @@ class PieDiagram(data: Data) : Diagram(data) {
 
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
+     * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float) {
+    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
         val radius = size / 2
         val font = getFontBySize(size)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
@@ -146,7 +146,10 @@ class PieDiagram(data: Data) : Diagram(data) {
         }
     }
 
-    override fun bounds(size: Float): Rect {
+    /**
+     * Get bounding [Rect] of diagram.
+     */
+    override fun bounds(): Rect {
         val font = getFontBySize(size)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }

@@ -9,7 +9,7 @@ import kotlin.math.*
  *
  * Data with negative values is not allowed.
  */
-class BarDiagram(data: Data) : PlaneDiagram(data, false, false, false) {
+class BarDiagram(data: Data, size: Float) : PlaneDiagram(data, size, false, false, false) {
 
     companion object {
         // Blue color for bars
@@ -29,9 +29,9 @@ class BarDiagram(data: Data) : PlaneDiagram(data, false, false, false) {
 
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
+     * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float) {
+    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
         val font = getFontBySize(size)
         val y1 = y0 + size
 
@@ -57,7 +57,10 @@ class BarDiagram(data: Data) : PlaneDiagram(data, false, false, false) {
         ruler.draw(canvas, x0, y0, size, x2)
     }
 
-    override fun bounds(size: Float): Rect {
+    /**
+     * Get bounding [Rect] of diagram.
+     */
+    override fun bounds(): Rect {
         val font = getFontBySize(size)
 
         val maxLabelWidth = labels.maxOf { label ->

@@ -11,12 +11,12 @@ fun main(args: Array<String>) {
         return exitEmptyData()
     }
 
-    val diagram = getDiagram(data, diagramType)
     val size = 400f
+    val diagram = getDiagram(data, size, diagramType)
 
     if (outputFile != null) {
-        writeDiagramToPNGFile(outputFile, diagram, size)
+        writeDiagramToPNGFile(outputFile, diagram)
     }
 
-    createDiagramWindow("pf-2021-viz", diagram, size)
+    createDiagramWindow("pf-2021-viz", diagram)
 }
