@@ -23,3 +23,10 @@ val diagramTypeByDescription = mapOf(
     "line" to DiagramType.LINE,
     "graph" to DiagramType.LINE,
 )
+
+fun parseDiagramType(text: String): DiagramType {
+    return diagramTypeByDescription.getOrElse(text.lowercase()) {
+        println("Unknown diagram type ($text). Falling back to default ($DEFAULT_DIAGRAM_TYPE).")
+        DEFAULT_DIAGRAM_TYPE
+    }
+}
