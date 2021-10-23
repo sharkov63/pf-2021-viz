@@ -52,8 +52,8 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val rulerBounds = ruler.bounds(scale)
-        val horizontalLabelsBounds = horizontalLabels.bounds(scale)
+        val rulerBounds = ruler.bounds()
+        val horizontalLabelsBounds = horizontalLabels.bounds().offset(0f, scale)
         return unionRects(rulerBounds, horizontalLabelsBounds)
     }
 }

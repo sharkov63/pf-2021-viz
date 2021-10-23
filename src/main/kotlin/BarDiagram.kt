@@ -65,6 +65,6 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
         }
 
         horizontalLabels.draw(canvas, x0 + barWidth / 2, y1)
-        ruler.draw(canvas, x0, y0, scale, x2)
+        ruler.draw(canvas, x0, y0, x2)
     }
 }

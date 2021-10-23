@@ -77,12 +77,11 @@ class PlaneDiagramRuler(val diagram: PlaneDiagram, private val drawVerticalLine:
     /**
      * Draw ruler on [canvas]
      * with starting from pivot ([x0], [y0]),
-     * with scale=[scale]
      * and drawing horizontal lines up until x=[x1]
      */
-    fun draw(canvas: Canvas, x0: Float, y0: Float, scale: Float, x1: Float) {
-        val y1 = y0 + scale
-        val yStep = scale / rangeRel
+    fun draw(canvas: Canvas, x0: Float, y0: Float, x1: Float) {
+        val y1 = y0 + diagram.scale
+        val yStep = diagram.scale / rangeRel
 
         if (drawVerticalLine) {
             canvas.drawLine(x0 - RULER_LEAK, y1, x0 - RULER_LEAK, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
@@ -110,16 +109,15 @@ class PlaneDiagramRuler(val diagram: PlaneDiagram, private val drawVerticalLine:
     }
 
     /**
-     * Get bounding [Rect] of ruler,
-     * if it's drawn with scale=[scale].
+     * Get bounding [Rect] of ruler.
      */
-    fun bounds(scale: Float): Rect {
+    fun bounds(): Rect {
         val maxLabelWidth = labels.maxOf { diagram.font.measureTextWidth(it) }
         return Rect(
             -maxLabelWidth - 2 * RULER_LEAK,
             0f,
             0f,
-            scale + diagram.font.measureText(labels.first()).height
+            diagram.scale + diagram.font.measureText(labels.first()).height
         )
     }
 }

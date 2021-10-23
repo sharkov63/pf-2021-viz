@@ -19,7 +19,7 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
         const val X_STEP_INDENT_COEFFICIENT = 0.035f
     }
 
-    override val ruler: PlaneDiagramRuler = PlaneDiagramRuler(this, true)
+    override val ruler: PlaneDiagramRuler
     override val horizontalLabels: PlaneDiagramHorizontalLabels
 
     override val xStep: Float
@@ -27,8 +27,10 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
 
     init {
         xStep = max(maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
-        horizontalLabels = PlaneDiagramHorizontalLabels(this, xStep, true)
         xMargin = max(maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
+
+        ruler = PlaneDiagramRuler(this, true)
+        horizontalLabels = PlaneDiagramHorizontalLabels(this, xStep, true)
     }
 
     /**
@@ -61,6 +63,6 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
             canvas.drawPoint(x, y, pointPaint)
         }
 
-        ruler.draw(canvas, x0, y0, scale, x1 + xStep * (data.size - 1) + xMargin)
+        ruler.draw(canvas, x0, y0, x1 + xStep * (data.size - 1) + xMargin)
     }
 }
