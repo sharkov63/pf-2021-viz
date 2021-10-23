@@ -102,7 +102,7 @@ class PlaneDiagramRuler(diagram: PlaneDiagram) {
         }
     }
 
-    fun bound(size: Float, font: Font): Rect {
+    fun bounds(size: Float, font: Font): Rect {
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it) }
         return Rect(
             -maxLabelWidth - 2 * RULER_LEAK,
