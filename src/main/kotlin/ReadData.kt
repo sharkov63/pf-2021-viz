@@ -65,3 +65,21 @@ fun readDataWithSkipStats(file: File?): DataWithSkipStats {
         readDataFromStdin()
     }
 }
+
+
+/**
+ * Get diagram data either from a specified file,
+ * or standard input (in case file is not specified, or cannot be reached or read).
+ *
+ * Invalid data records are skipped.
+ *
+ * Prints statistics (including the number of skipped records) to stdout.
+ */
+fun readData(inputFile: File?): Data {
+    val (data, skippedRecords) = readDataWithSkipStats(inputFile)
+    println("Successfully read ${data.size + skippedRecords} records.")
+    if (skippedRecords > 0) {
+        println("$skippedRecords of those records are invalid and thus, omitted.")
+    }
+    return data
+}

@@ -6,12 +6,7 @@ fun main(args: Array<String>) {
 
     val options = parseOptions(args.toList()) ?: return exitInvalidArgs()
 
-    // Read data
-    val (data, skippedRecords) = readDataWithSkipStats(options.inputFile)
-    println("Successfully read ${data.size + skippedRecords} records.")
-    if (skippedRecords > 0) {
-        println("$skippedRecords of those records are invalid and thus, omitted.")
-    }
+    val data = readData(options.inputFile)
     if (data.isEmpty()) {
         return exitEmptyData()
     }
