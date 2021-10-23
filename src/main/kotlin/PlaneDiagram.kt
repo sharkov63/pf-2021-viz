@@ -26,6 +26,7 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
 
     val labelRects: List<Rect>
     val labelWidths: List<Float>
+    val labelHeights: List<Float>
     val maxLabelWidth: Float
     val maxLabelHeight: Float
 
@@ -35,8 +36,9 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
         }
         labelRects = labels.map { label -> font.measureText(label) }
         labelWidths = labelRects.map { rect -> rect.width }
+        labelHeights = labelRects.map { rect -> rect.height }
         maxLabelWidth = labelWidths.maxOf { it }
-        maxLabelHeight = labelRects.maxOf { it.height }
+        maxLabelHeight = labelHeights.maxOf { it }
     }
 
 

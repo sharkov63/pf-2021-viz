@@ -29,7 +29,7 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
         xStep = max(maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
         xMargin = max(maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
 
-        ruler = PlaneDiagramRuler(this, true)
+        ruler = PlaneDiagramRuler(this, xStep * (data.size - 1) + 2 * xMargin, true)
         horizontalLabels = PlaneDiagramHorizontalLabels(this, xStep, true)
     }
 
@@ -63,6 +63,6 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
             canvas.drawPoint(x, y, pointPaint)
         }
 
-        ruler.draw(canvas, x0, y0, x1 + xStep * (data.size - 1) + xMargin)
+        ruler.draw(canvas, x0, y0)
     }
 }

@@ -35,7 +35,7 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
         xGap = scale * X_GAP_COEFFICIENT
         xStep = barWidth + xGap
 
-        ruler = PlaneDiagramRuler(this, false)
+        ruler = PlaneDiagramRuler(this, xStep * (data.size - 1) + barWidth, false)
         horizontalLabels = PlaneDiagramHorizontalLabels(this, xStep, false)
     }
 
@@ -55,7 +55,6 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
         val y1 = y0 + scale
         val yCoords = getYCoords(y0)
-        val x2 = x0 + xStep * (data.size - 1) + barWidth
 
         // Draw bars
         for (i in data.indices) {
@@ -65,6 +64,6 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
         }
 
         horizontalLabels.draw(canvas, x0 + barWidth / 2, y1)
-        ruler.draw(canvas, x0, y0, x2)
+        ruler.draw(canvas, x0, y0)
     }
 }
