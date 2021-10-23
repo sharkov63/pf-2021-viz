@@ -27,9 +27,9 @@ fun writeDiagramToPNGFile(file: File, diagram: Diagram) {
     requireNotNull(bytes)
     ensureFile(file)
     if (!file.canWrite()) {
-        println("Cannot write to file \"${file.path}\"")
+        println("Cannot write to file \"${file.path}\"!")
         return
     }
     file.writeBytes(bytes)
-    println("Successfully written PNG data to \"${file.path}\"")
+    println("Successfully written PNG data to \"${file.path}\"!")
 }

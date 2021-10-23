@@ -12,6 +12,7 @@ internal class AllSamples {
         "bar",
         "line",
         "pie",
+        "area",
     )
 
     private fun getAnswerFileName(inputFile: File, diagramCode: String): String {

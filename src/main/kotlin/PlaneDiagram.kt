@@ -23,6 +23,7 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
     abstract val horizontalLabels: PlaneDiagramHorizontalLabels
 
     abstract val xStep: Float
+    abstract val xMargin: Float
 
     val labelRects: List<Rect>
     val labelWidths: List<Float>
@@ -55,7 +56,7 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
      */
     override fun bounds(): Rect {
         val rulerBounds = ruler.bounds()
-        val horizontalLabelsBounds = horizontalLabels.bounds().offset(0f, scale)
+        val horizontalLabelsBounds = horizontalLabels.bounds().offset(xMargin, scale)
         return unionRects(rulerBounds, horizontalLabelsBounds)
     }
 }

@@ -27,14 +27,20 @@ abstract class Drawable {
         val bounds = bounds()
 
         val bitmap = Bitmap()
+        val bitmapWidth = bounds.width.toInt() + 2 * PNG_PADDING
+        val bitmapHeight = bounds.height.toInt() + 2 * PNG_PADDING
         bitmap.imageInfo = ImageInfo(
-            bounds.width.toInt() + 2 * PNG_PADDING,
-            bounds.height.toInt() + 2 * PNG_PADDING,
+            bitmapWidth,
+            bitmapHeight,
             ColorType.BGRA_8888,
             ColorAlphaType.PREMUL
         )
         bitmap.allocPixels()
         val canvas = Canvas(bitmap)
+        val whitePaint = Paint().apply {
+            color = 0xFFFFFFFF.toInt()
+        }
+        canvas.drawRect(Rect(0f, 0f, bitmapWidth.toFloat(), bitmapHeight.toFloat()), whitePaint)
         draw(canvas, -bounds.left + PNG_PADDING, -bounds.top + PNG_PADDING)
         canvas.readPixels(bitmap, 0, 0)
 

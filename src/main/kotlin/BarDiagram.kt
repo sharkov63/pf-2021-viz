@@ -27,6 +27,7 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
     private val xGap: Float
 
     override val xStep: Float
+    override val xMargin: Float
 
     init {
         checkDataCorrectness()
@@ -34,6 +35,7 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
         barWidth = max(maxLabelWidth + BAR_PADDING, scale * MIN_BAR_WIDTH_COEFFICIENT)
         xGap = scale * X_GAP_COEFFICIENT
         xStep = barWidth + xGap
+        xMargin = barWidth / 2
 
         ruler = PlaneDiagramRuler(this, xStep * (data.size - 1) + barWidth, false)
         horizontalLabels = PlaneDiagramHorizontalLabels(this, xStep, false)

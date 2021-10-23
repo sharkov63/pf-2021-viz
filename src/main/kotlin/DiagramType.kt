@@ -5,6 +5,7 @@ enum class DiagramType {
     BAR,
     PIE,
     LINE,
+    AREA,
 }
 
 val DEFAULT_DIAGRAM_TYPE = DiagramType.BAR
@@ -24,6 +25,8 @@ val diagramTypeByDescription = mapOf(
     "graph" to DiagramType.LINE,
     "plot" to DiagramType.LINE,
     "curve" to DiagramType.LINE,
+    "area" to DiagramType.AREA,
+    "fill" to DiagramType.AREA,
 )
 
 fun parseDiagramType(text: String): DiagramType {

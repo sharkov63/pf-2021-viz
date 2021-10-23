@@ -28,6 +28,13 @@ java -jar viz.jar [-i INPUT_FILE] [SORT_FLAG] [-d DIAGRAM_TYPE] [-s SCALE] [-o O
 
 Можно вызвать, указав опции ``-d line``, ``-d graph``, ``-d plot`` или ``-d curve``. Ось значений не обязательно начнается с нуля: диапазон подбирается автоматически под данные.
 
+### График с областями
+<p align='center'>
+<img src = 'https://user-images.githubusercontent.com/39223464/138570367-de57576a-e9fa-46b4-8a65-5d9831f35363.png' height="320px">
+</p>
+
+Можно вызвать, указав опции ``-d area``, ``-d fill``. Записи с отрицательными значениями запрещены.
+
 ### Круговая диаграмма
 <p align='center'>
 <img src = 'https://user-images.githubusercontent.com/39223464/137522451-b0f5f254-b188-4d47-a943-4b9ea1cdf7cb.png' height="320px">

@@ -16,7 +16,9 @@ import java.io.File
  * "--reverse-sort" "--rsort"
  */
 // TODO("Add cropBottom option for line and bar diagrams")
-
+// TODO("Add no window mode")
+// TODO("Add custom padding")
+// TODO("Introduce enum class-method")
 
 data class Options(
     val inputFile: File?,

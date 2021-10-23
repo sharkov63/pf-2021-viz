@@ -88,7 +88,7 @@ class PlaneDiagramRuler(
         val yStep = diagram.scale / rangeRel
 
         if (drawVerticalLine) {
-            canvas.drawLine(x0 - RULER_LEAK, y1, x0 - RULER_LEAK, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
+            canvas.drawLine(x0, y1, x0, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
         }
 
         // Draw each of level lines
@@ -96,7 +96,7 @@ class PlaneDiagramRuler(
             val y = y1 - yStep * i
 
             // Draw line
-            canvas.drawLine(x0 - RULER_LEAK, y, x1 + RULER_LEAK, y, LIGHT_GREY_STROKE_PAINT)
+            canvas.drawLine(x0 - RULER_LEAK, y, x1, y, LIGHT_GREY_STROKE_PAINT)
 
             // Draw label
             val label = labels[i]
@@ -119,7 +119,7 @@ class PlaneDiagramRuler(
         val maxLabelWidth = labels.maxOf { diagram.font.measureTextWidth(it) }
         return Rect(
             -maxLabelWidth - 2 * RULER_LEAK,
-            0f,
+            -RULER_LEAK,
             linesLength,
             diagram.scale + diagram.font.measureText(labels.first()).height
         )

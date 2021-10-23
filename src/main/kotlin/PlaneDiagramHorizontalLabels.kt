@@ -1,4 +1,5 @@
 import org.jetbrains.skija.*
+import kotlin.math.*
 
 class PlaneDiagramHorizontalLabels(
     val diagram: PlaneDiagram,
@@ -41,9 +42,9 @@ class PlaneDiagramHorizontalLabels(
      * Get bounding [Rect] of horizontal labels.
      */
     override fun bounds() = Rect(
+        -diagram.labelWidths.first() / 2,
         0f,
-        0f,
-        xStep * diagram.labels.size + diagram.labelWidths.last(),
+        xStep * (diagram.labels.size - 1) + diagram.labelWidths.last() / 2,
         diagram.maxLabelHeight + HORIZONTAL_LABELS_INDENT,
     )
 }

@@ -23,6 +23,8 @@ typealias Data = List<DataElement>
 /**
  * Get a [DataElement] from a string.
  * Returns null, if the string is invalid.
+ *
+ * TODO("Allow one token")
  */
 fun parseDataElementOrNull(line: String): DataElement? {
     val tokens = line

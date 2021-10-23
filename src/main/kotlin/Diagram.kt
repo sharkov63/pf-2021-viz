@@ -1,8 +1,6 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
-// TODO("Area diagram")
-
 const val MIN_DIAGRAM_SCALE = 100f
 const val MAX_DIAGRAM_SCALE = 2000f
 const val DEFAULT_DIAGRAM_SCALE = 400f
@@ -88,6 +86,7 @@ fun getDiagram(data: Data, scale: Float, diagramType: DiagramType): Diagram {
     return when (diagramType) {
         DiagramType.BAR -> BarDiagram(data, scale)
         DiagramType.PIE -> PieDiagram(data, scale)
-        DiagramType.LINE -> LineDiagram(data, scale)
+        DiagramType.LINE -> LineDiagram(data, scale, false)
+        DiagramType.AREA -> LineDiagram(data, scale, true)
     }
 }
