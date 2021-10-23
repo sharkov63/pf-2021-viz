@@ -19,6 +19,16 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
         const val X_STEP_INDENT_COEFFICIENT = 0.035f
     }
 
+    val xStep: Float
+    val xMargin: Float
+
+    init {
+        xStep = max(horizontalLabels.maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
+        xMargin = max(horizontalLabels.maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
+    }
+
+
+
     /**
      * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
@@ -32,13 +42,8 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
 
         // Prepare geometric values
         val y1 = y0 + scale
-        val yCoords = getYCoords(y0, y1)
-        val maxLabelWidth = labels.maxOf { label ->
-            font.measureTextWidth(label)
-        }
-        val xMargin = max(maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
+        val yCoords = getYCoords(y0)
         val x1 = x0 + xMargin
-        val xStep = max(maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
         val points = data.mapIndexed { i, _ ->
             Pair(x1 + xStep * i, yCoords[i])
         }
@@ -46,7 +51,7 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
             .flatMap { (x, y) -> listOf(x, y) }
             .toFloatArray()
 
-        horizontalLabels.draw(canvas, x1, scale, xStep, y1)
+        horizontalLabels.draw(canvas, x1, xStep, y1)
 
         // Draw lines and points
         canvas.drawPolygon(pointsFlatten, linePaint)
@@ -61,13 +66,8 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val maxLabelWidth = labels.maxOf { label ->
-            font.measureTextWidth(label)
-        }
-        val xStep = max(maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
-
         val rulerBound = ruler.bounds(scale)
-        val horizontalLabelsBound = horizontalLabels.bounds(scale, xStep, scale)
+        val horizontalLabelsBound = horizontalLabels.bounds(xStep, scale)
         return unionRects(rulerBound, horizontalLabelsBound)
     }
 }

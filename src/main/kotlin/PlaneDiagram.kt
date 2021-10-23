@@ -1,4 +1,4 @@
-import org.jetbrains.skija.Font
+import org.jetbrains.skija.*
 
 /**
  * Diagram on a 2D plane:
@@ -23,25 +23,25 @@ abstract class PlaneDiagram(
         const val FONT_SIZE_COEFFICIENT = 0.03f
     }
 
+    val font: Font
+
     val ruler: PlaneDiagramRuler
     val horizontalLabels: PlaneDiagramHorizontalLabels
 
-    val font: Font
-
-
     init {
-        ruler = PlaneDiagramRuler(this, drawRulerLine)
-        horizontalLabels = PlaneDiagramHorizontalLabels(this, drawHorizontalMarks)
         font = FONT.makeWithSize(scale * FONT_SIZE_COEFFICIENT).apply {
             isEmboldened = true // bold labels
         }
+
+        ruler = PlaneDiagramRuler(this, drawRulerLine)
+        horizontalLabels = PlaneDiagramHorizontalLabels(this, drawHorizontalMarks)
     }
 
 
     /**
-     * Get coordinates for value (y) axis on range [y0]..[y1]
+     * Get coordinates for value (y) axis, starting from [y0]
      */
-    fun getYCoords(y0: Float, y1: Float): List<Float> {
-        return data.map { y1 - (it.value - ruler.begin) / (ruler.step * ruler.rangeRel) * (y1 - y0) }
+    fun getYCoords(y0: Float): List<Float> {
+        return data.map { y0 + scale - (it.value - ruler.begin) / ruler.range * scale }
     }
 }

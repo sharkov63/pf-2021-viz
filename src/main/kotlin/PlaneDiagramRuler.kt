@@ -9,6 +9,7 @@ class PlaneDiagramRuler(val diagram: PlaneDiagram, private val drawVerticalLine:
 
     val step: Float
     val begin: Float
+    val range: Float
     val rangeRel: Int
 
     private val labels: List<String>
@@ -33,6 +34,7 @@ class PlaneDiagramRuler(val diagram: PlaneDiagram, private val drawVerticalLine:
         begin = rulerBeginRel * step
         val rulerEndRel = floor(diagram.maxValue / step).toInt() + 1
         rangeRel = rulerEndRel - rulerBeginRel
+        range = rangeRel * step
 
         labels = calcLabels()
     }
