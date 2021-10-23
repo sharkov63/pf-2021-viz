@@ -31,12 +31,12 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
     init {
         checkDataCorrectness()
 
-        ruler = PlaneDiagramRuler(this, false)
-        horizontalLabels = PlaneDiagramHorizontalLabels(this, false)
-
-        barWidth = max(horizontalLabels.maxLabelWidth + BAR_PADDING, scale * MIN_BAR_WIDTH_COEFFICIENT)
+        barWidth = max(maxLabelWidth + BAR_PADDING, scale * MIN_BAR_WIDTH_COEFFICIENT)
         xGap = scale * X_GAP_COEFFICIENT
         xStep = barWidth + xGap
+
+        ruler = PlaneDiagramRuler(this, false)
+        horizontalLabels = PlaneDiagramHorizontalLabels(this, xStep, false)
     }
 
 
@@ -64,7 +64,7 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
             canvas.drawRect(Rect(x, y, x + barWidth, y1), BAR_PAINT)
         }
 
-        horizontalLabels.draw(canvas, x0 + barWidth / 2, xStep, y1)
+        horizontalLabels.draw(canvas, x0 + barWidth / 2, y1)
         ruler.draw(canvas, x0, y0, scale, x2)
     }
 }

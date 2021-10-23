@@ -24,10 +24,19 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
 
     abstract val xStep: Float
 
+    val labelRects: List<Rect>
+    val labelWidths: List<Float>
+    val maxLabelWidth: Float
+    val maxLabelHeight: Float
+
     init {
         font = FONT.makeWithSize(scale * FONT_SIZE_COEFFICIENT).apply {
             isEmboldened = true // bold labels
         }
+        labelRects = labels.map { label -> font.measureText(label) }
+        labelWidths = labelRects.map { rect -> rect.width }
+        maxLabelWidth = labelWidths.maxOf { it }
+        maxLabelHeight = labelRects.maxOf { it.height }
     }
 
 
@@ -38,13 +47,13 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
         return data.map { y0 + scale - (it.value - ruler.begin) / ruler.range * scale }
     }
 
+
     /**
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val xStep = xStep
         val rulerBounds = ruler.bounds(scale)
-        val horizontalLabelsBounds = horizontalLabels.bounds(xStep, scale)
+        val horizontalLabelsBounds = horizontalLabels.bounds(scale)
         return unionRects(rulerBounds, horizontalLabelsBounds)
     }
 }

@@ -1,38 +1,34 @@
 import org.jetbrains.skija.*
 
-class PlaneDiagramHorizontalLabels(diagram: PlaneDiagram, private val drawMarks: Boolean) {
+class PlaneDiagramHorizontalLabels(diagram: PlaneDiagram, private val xStep: Float, private val drawMarks: Boolean) {
 
     companion object {
         const val MARK_LEAK = 3f
         const val HORIZONTAL_LABELS_INDENT = 5f
     }
 
-    val labels: List<String>
-    val font: Font
-    val labelRects: List<Rect>
-    val labelWidths: List<Float>
-    val labelHeights: List<Float>
-    val maxLabelWidth: Float
-    val maxLabelHeight: Float
+    private val font: Font
+    private val labels: List<String>
+    private val labelRects: List<Rect>
+    private val labelWidths: List<Float>
+    private val maxLabelWidth: Float
+    private val maxLabelHeight: Float
 
     init {
-        labels = diagram.labels
         font = diagram.font
-        labelRects = labels.map { label -> font.measureText(label) }
-        labelWidths = labelRects.map { rect -> rect.width }
-        labelHeights = labelRects.map { rect -> rect.height }
-        maxLabelWidth = labelWidths.maxOf { it }
-        maxLabelHeight = labelHeights.maxOf { it }
+        labels = diagram.labels
+        labelRects = diagram.labelRects
+        labelWidths = diagram.labelWidths
+        maxLabelWidth = diagram.maxLabelWidth
+        maxLabelHeight = diagram.maxLabelHeight
     }
-
 
     /**
      * Draw labels on x-axis on [canvas]
      * starting from x=[x0],
-     * with x-step [xStep],
      * on y-level [y].
      */
-    fun draw(canvas: Canvas, x0: Float, xStep: Float, y: Float) {
+    fun draw(canvas: Canvas, x0: Float, y: Float) {
         // Draw each of the labels
         for ((i, label) in labels.withIndex()) {
             val xMid = x0 + xStep * i
@@ -55,9 +51,9 @@ class PlaneDiagramHorizontalLabels(diagram: PlaneDiagram, private val drawMarks:
 
     /**
      * Get bounding [Rect] of horizontal labels,
-     * if it's drawn with x-step=[xStep] on level [y].
+     * if it's drawn on level [y].
      */
-    fun bounds(xStep: Float, y: Float) = Rect(
+    fun bounds(y: Float) = Rect(
         0f,
         0f,
         xStep * labels.size + labelWidths.last(),

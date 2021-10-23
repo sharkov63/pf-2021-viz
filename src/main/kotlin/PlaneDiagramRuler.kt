@@ -12,7 +12,7 @@ class PlaneDiagramRuler(val diagram: PlaneDiagram, private val drawVerticalLine:
     val range: Float
     val rangeRel: Int
 
-    private val labels: List<String>
+    val labels: List<String>
 
     init {
         /* Diagram value range */

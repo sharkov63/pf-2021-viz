@@ -19,18 +19,16 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
         const val X_STEP_INDENT_COEFFICIENT = 0.035f
     }
 
-    override val ruler: PlaneDiagramRuler
+    override val ruler: PlaneDiagramRuler = PlaneDiagramRuler(this, true)
     override val horizontalLabels: PlaneDiagramHorizontalLabels
 
     override val xStep: Float
     private val xMargin: Float
 
     init {
-        ruler = PlaneDiagramRuler(this, true)
-        horizontalLabels = PlaneDiagramHorizontalLabels(this, true)
-
-        xStep = max(horizontalLabels.maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
-        xMargin = max(horizontalLabels.maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
+        xStep = max(maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
+        horizontalLabels = PlaneDiagramHorizontalLabels(this, xStep, true)
+        xMargin = max(maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
     }
 
     /**
@@ -55,7 +53,7 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
             .flatMap { (x, y) -> listOf(x, y) }
             .toFloatArray()
 
-        horizontalLabels.draw(canvas, x1, xStep, y1)
+        horizontalLabels.draw(canvas, x1, y1)
 
         // Draw lines and points
         canvas.drawPolygon(pointsFlatten, linePaint)
