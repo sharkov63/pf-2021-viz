@@ -64,7 +64,7 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
             false,
         )
 
-        drawRuler(
+        ruler.draw(
             canvas,
             y0,
             y1,
@@ -86,7 +86,7 @@ class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, c
         val xGap = size * X_GAP_COEFFICIENT
         val xStep = barWidth + xGap
 
-        val rulerBound = rulerBound(size, font)
+        val rulerBound = ruler.bound(size, font)
         val horizontalLabelsBound = horizontalLabelsBound(xStep, size, font)
         return unionRects(rulerBound, horizontalLabelsBound)
     }

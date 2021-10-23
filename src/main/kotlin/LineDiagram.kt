@@ -65,7 +65,7 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
             canvas.drawPoint(x, y, pointPaint)
         }
 
-        drawRuler(
+        ruler.draw(
             canvas,
             y0,
             y1,
@@ -86,7 +86,7 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
         }
         val xStep = max(maxLabelWidth + size * X_STEP_INDENT_COEFFICIENT, size * MIN_X_STEP_COEFFICIENT)
 
-        val rulerBound = rulerBound(size, font)
+        val rulerBound = ruler.bound(size, font)
         val horizontalLabelsBound = horizontalLabelsBound(xStep, size, font)
         return unionRects(rulerBound, horizontalLabelsBound)
     }
