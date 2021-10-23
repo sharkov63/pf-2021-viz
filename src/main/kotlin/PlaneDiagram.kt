@@ -1,6 +1,3 @@
-import org.jetbrains.skija.*
-
-
 /**
  * Diagram on a 2D plane:
  * y-axis is for values;
@@ -20,19 +17,6 @@ abstract class PlaneDiagram(data: Data, val cropBottom: Boolean) : Diagram(data)
 
     val ruler = PlaneDiagramRuler(this)
     val horizontalLabels = PlaneDiagramHorizontalLabels(this)
-
-
-    fun getValueRange() = if (cropBottom || minValue < 0) {
-        maxValue - minValue
-    } else {
-        maxValue
-    }
-
-    fun getBeginValue() = if (cropBottom || minValue < 0) {
-        minValue
-    } else {
-        0f
-    }
 
 
     /**

@@ -14,15 +14,28 @@ class PlaneDiagramRuler(diagram: PlaneDiagram) {
     private val labels: List<String>
 
     init {
-        step = calcRulerStep(diagram.getValueRange())
-        val rulerBeginRel = floor(diagram.getBeginValue() / step).toInt()
+        /* Diagram value range */
+        val needCrop = diagram.cropBottom || diagram.minValue < 0
+        val rangeValue = if (needCrop) {
+            diagram.maxValue - diagram.minValue
+        } else {
+            diagram.maxValue
+        }
+        val beginValue = if (needCrop) {
+            diagram.minValue
+        } else {
+            0f
+        }
+
+        /* Ruler params */
+        step = calcRulerStep(rangeValue)
+        val rulerBeginRel = floor(beginValue / step).toInt()
         begin = rulerBeginRel * step
         val rulerEndRel = floor(diagram.maxValue / step).toInt() + 1
         rangeRel = rulerEndRel - rulerBeginRel
 
         labels = calcLabels()
     }
-
 
 
     /**
