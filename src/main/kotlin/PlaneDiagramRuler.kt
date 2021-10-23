@@ -1,7 +1,7 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
-class PlaneDiagramRuler(diagram: PlaneDiagram, private val drawVerticalLine: Boolean) {
+class PlaneDiagramRuler(val diagram: PlaneDiagram, private val drawVerticalLine: Boolean) {
 
     companion object {
         const val RULER_LEAK = 5f
@@ -74,18 +74,12 @@ class PlaneDiagramRuler(diagram: PlaneDiagram, private val drawVerticalLine: Boo
 
     /**
      * Draw ruler on [canvas]
-     * with y-range [y0]..[y1],
-     * x-range [x0]..[x1],
-     * and number labels with [font].
+     * with starting from pivot ([x0], [y0]),
+     * with size=[size]
+     * and drawing horizontal lines up until x=[x1]
      */
-    fun draw(
-        canvas: Canvas,
-        x0: Float,
-        y0: Float,
-        size: Float,
-        x1: Float,
-        font: Font,
-    ) {
+    fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float, x1: Float) {
+        val font = diagram.getFontBySize(size)
         val y1 = y0 + size
         val yStep = size / rangeRel
         if (drawVerticalLine) {
@@ -113,7 +107,12 @@ class PlaneDiagramRuler(diagram: PlaneDiagram, private val drawVerticalLine: Boo
         }
     }
 
-    fun bounds(size: Float, font: Font): Rect {
+    /**
+     * Get bounding [Rect] of ruler,
+     * if it's drawn with size=[size].
+     */
+    fun bounds(size: Float): Rect {
+        val font = diagram.getFontBySize(size)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it) }
         return Rect(
             -maxLabelWidth - 2 * RULER_LEAK,

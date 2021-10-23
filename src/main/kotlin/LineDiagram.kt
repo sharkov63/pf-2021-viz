@@ -50,8 +50,8 @@ class LineDiagram(data: Data) : PlaneDiagram(data, true, true) {
         horizontalLabels.draw(
             canvas,
             x1,
+            size,
             xStep,
-            font,
             y1,
             true,
         )
@@ -62,14 +62,7 @@ class LineDiagram(data: Data) : PlaneDiagram(data, true, true) {
             canvas.drawPoint(x, y, pointPaint)
         }
 
-        ruler.draw(
-            canvas,
-            x0,
-            y0,
-            size,
-            x1 + xStep * (data.size - 1) + xMargin,
-            font,
-        )
+        ruler.draw(canvas, x0, y0, size, x1 + xStep * (data.size - 1) + xMargin)
     }
 
     override fun bounds(size: Float): Rect {
@@ -80,8 +73,8 @@ class LineDiagram(data: Data) : PlaneDiagram(data, true, true) {
         }
         val xStep = max(maxLabelWidth + size * X_STEP_INDENT_COEFFICIENT, size * MIN_X_STEP_COEFFICIENT)
 
-        val rulerBound = ruler.bounds(size, font)
-        val horizontalLabelsBound = horizontalLabels.bounds(xStep, size, font)
+        val rulerBound = ruler.bounds(size)
+        val horizontalLabelsBound = horizontalLabels.bounds(size, xStep, size)
         return unionRects(rulerBound, horizontalLabelsBound)
     }
 }

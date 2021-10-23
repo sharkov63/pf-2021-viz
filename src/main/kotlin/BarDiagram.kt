@@ -55,20 +55,13 @@ class BarDiagram(data: Data) : PlaneDiagram(data, false, false) {
         horizontalLabels.draw(
             canvas,
             x0 + barWidth / 2,
+            size,
             xStep,
-            font,
             y1,
             false,
         )
 
-        ruler.draw(
-            canvas,
-            x0,
-            y0,
-            size,
-            x2,
-            font,
-        )
+        ruler.draw(canvas, x0, y0, size, x2)
     }
 
     override fun bounds(size: Float): Rect {
@@ -81,8 +74,8 @@ class BarDiagram(data: Data) : PlaneDiagram(data, false, false) {
         val xGap = size * X_GAP_COEFFICIENT
         val xStep = barWidth + xGap
 
-        val rulerBound = ruler.bounds(size, font)
-        val horizontalLabelsBound = horizontalLabels.bounds(xStep, size, font)
+        val rulerBound = ruler.bounds(size)
+        val horizontalLabelsBound = horizontalLabels.bounds(size, xStep, size)
         return unionRects(rulerBound, horizontalLabelsBound)
     }
 }
