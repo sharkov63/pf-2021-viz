@@ -9,7 +9,7 @@ import kotlin.math.*
  *
  * Data with negative values is not allowed.
  */
-class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, false, false) {
+class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
 
     companion object {
         // Blue color for bars
@@ -20,17 +20,23 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
         const val X_GAP_COEFFICIENT = 0.05f
     }
 
+    override val ruler: PlaneDiagramRuler
+    override val horizontalLabels: PlaneDiagramHorizontalLabels
+
     private val barWidth: Float
     private val xGap: Float
 
-    private val xStep: Float
+    override val xStep: Float
 
     init {
         checkDataCorrectness()
 
+        ruler = PlaneDiagramRuler(this, false)
+        horizontalLabels = PlaneDiagramHorizontalLabels(this, false)
+
         barWidth = max(horizontalLabels.maxLabelWidth + BAR_PADDING, scale * MIN_BAR_WIDTH_COEFFICIENT)
         xGap = scale * X_GAP_COEFFICIENT
-        xStep = calcXStep()
+        xStep = barWidth + xGap
     }
 
 
@@ -40,11 +46,6 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
         if (negativeElement != null) {
             exitNegativeValues(DiagramType.BAR, negativeElement)
         }
-    }
-
-
-    override fun calcXStep(): Float {
-        return barWidth + xGap
     }
 
 

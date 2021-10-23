@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Inherits from [PlaneDiagram]
  */
-class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, true, true) {
+class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true) {
 
     companion object {
         const val GRAPH_COLOR_CODE = 0xFF4F86C6.toInt()
@@ -19,17 +19,18 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
         const val X_STEP_INDENT_COEFFICIENT = 0.035f
     }
 
-    private val xStep: Float
+    override val ruler: PlaneDiagramRuler
+    override val horizontalLabels: PlaneDiagramHorizontalLabels
+
+    override val xStep: Float
     private val xMargin: Float
 
     init {
-        xStep = calcXStep()
+        ruler = PlaneDiagramRuler(this, true)
+        horizontalLabels = PlaneDiagramHorizontalLabels(this, true)
+
+        xStep = max(horizontalLabels.maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
         xMargin = max(horizontalLabels.maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
-    }
-
-
-    override fun calcXStep(): Float {
-        return max(horizontalLabels.maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
     }
 
     /**

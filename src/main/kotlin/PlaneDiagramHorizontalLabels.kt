@@ -29,13 +29,13 @@ class PlaneDiagramHorizontalLabels(diagram: PlaneDiagram, private val drawMarks:
     /**
      * Draw labels on x-axis on [canvas]
      * starting from x=[x0],
-     * with x-step [dx],
+     * with x-step [xStep],
      * on y-level [y].
      */
-    fun draw(canvas: Canvas, x0: Float, dx: Float, y: Float) {
+    fun draw(canvas: Canvas, x0: Float, xStep: Float, y: Float) {
         // Draw each of the labels
         for ((i, label) in labels.withIndex()) {
-            val xMid = x0 + dx * i
+            val xMid = x0 + xStep * i
 
             // Draw mark
             if (drawMarks) {
@@ -55,12 +55,12 @@ class PlaneDiagramHorizontalLabels(diagram: PlaneDiagram, private val drawMarks:
 
     /**
      * Get bounding [Rect] of horizontal labels,
-     * if it's drawn with x-step=[dx] on level [y].
+     * if it's drawn with x-step=[xStep] on level [y].
      */
-    fun bounds(dx: Float, y: Float) = Rect(
+    fun bounds(xStep: Float, y: Float) = Rect(
         0f,
         0f,
-        dx * labels.size + labelWidths.last(),
+        xStep * labels.size + labelWidths.last(),
         y + maxLabelHeight + HORIZONTAL_LABELS_INDENT,
     )
 }

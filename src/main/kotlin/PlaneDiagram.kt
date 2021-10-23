@@ -11,13 +11,7 @@ import org.jetbrains.skija.*
  *
  * Incorporates [BarDiagram] and [LineDiagram].
  */
-abstract class PlaneDiagram(
-    data: Data,
-    scale: Float,
-    val cropBottom: Boolean,
-    drawRulerLine: Boolean,
-    drawHorizontalMarks: Boolean,
-) : Diagram(data, scale) {
+abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) : Diagram(data, scale) {
 
     companion object {
         const val FONT_SIZE_COEFFICIENT = 0.03f
@@ -25,20 +19,17 @@ abstract class PlaneDiagram(
 
     val font: Font
 
-    val ruler: PlaneDiagramRuler
-    val horizontalLabels: PlaneDiagramHorizontalLabels
+    abstract val ruler: PlaneDiagramRuler
+    abstract val horizontalLabels: PlaneDiagramHorizontalLabels
+
+    abstract val xStep: Float
 
     init {
         font = FONT.makeWithSize(scale * FONT_SIZE_COEFFICIENT).apply {
             isEmboldened = true // bold labels
         }
-
-        ruler = PlaneDiagramRuler(this, drawRulerLine)
-        horizontalLabels = PlaneDiagramHorizontalLabels(this, drawHorizontalMarks)
     }
 
-
-    abstract fun calcXStep(): Float
 
     /**
      * Get coordinates for value (y) axis, starting from [y0]
@@ -51,7 +42,7 @@ abstract class PlaneDiagram(
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val xStep = calcXStep()
+        val xStep = xStep
         val rulerBounds = ruler.bounds(scale)
         val horizontalLabelsBounds = horizontalLabels.bounds(xStep, scale)
         return unionRects(rulerBounds, horizontalLabelsBounds)
