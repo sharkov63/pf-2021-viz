@@ -14,7 +14,7 @@ import javax.swing.WindowConstants
 
 
 
-const val WINDOW_PADDING = 5
+const val WINDOW_PADDING = 15
 const val CANVAS_UNIT = 1.1f
 
 /**
