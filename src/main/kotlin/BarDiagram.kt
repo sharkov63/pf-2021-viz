@@ -9,7 +9,7 @@ import kotlin.math.*
  *
  * Data with negative values is not allowed.
  */
-class BarDiagram(data: Data, size: Float) : PlaneDiagram(data, size, false, false, false) {
+class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, false, false) {
 
     companion object {
         // Blue color for bars
@@ -32,16 +32,16 @@ class BarDiagram(data: Data, size: Float) : PlaneDiagram(data, size, false, fals
      * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
-        val font = getFontBySize(size)
-        val y1 = y0 + size
+        val font = getFontBySize(scale)
+        val y1 = y0 + scale
 
         // Prepare geometric values
         val yCoords = getYCoords(y0, y1)
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
         }
-        val barWidth = max(maxLabelWidth + BAR_PADDING, size * MIN_BAR_WIDTH_COEFFICIENT)
-        val xGap = size * X_GAP_COEFFICIENT
+        val barWidth = max(maxLabelWidth + BAR_PADDING, scale * MIN_BAR_WIDTH_COEFFICIENT)
+        val xGap = scale * X_GAP_COEFFICIENT
         val xStep = barWidth + xGap
         val x2 = x0 + xStep * (data.size - 1) + barWidth
 
@@ -52,26 +52,26 @@ class BarDiagram(data: Data, size: Float) : PlaneDiagram(data, size, false, fals
             canvas.drawRect(Rect(x, y, x + barWidth, y1), BAR_PAINT)
         }
 
-        horizontalLabels.draw(canvas, x0 + barWidth / 2, size, xStep, y1)
+        horizontalLabels.draw(canvas, x0 + barWidth / 2, scale, xStep, y1)
 
-        ruler.draw(canvas, x0, y0, size, x2)
+        ruler.draw(canvas, x0, y0, scale, x2)
     }
 
     /**
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val font = getFontBySize(size)
+        val font = getFontBySize(scale)
 
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
         }
-        val barWidth = max(maxLabelWidth + BAR_PADDING, size * MIN_BAR_WIDTH_COEFFICIENT)
-        val xGap = size * X_GAP_COEFFICIENT
+        val barWidth = max(maxLabelWidth + BAR_PADDING, scale * MIN_BAR_WIDTH_COEFFICIENT)
+        val xGap = scale * X_GAP_COEFFICIENT
         val xStep = barWidth + xGap
 
-        val rulerBound = ruler.bounds(size)
-        val horizontalLabelsBound = horizontalLabels.bounds(size, xStep, size)
+        val rulerBound = ruler.bounds(scale)
+        val horizontalLabelsBound = horizontalLabels.bounds(scale, xStep, scale)
         return unionRects(rulerBound, horizontalLabelsBound)
     }
 }

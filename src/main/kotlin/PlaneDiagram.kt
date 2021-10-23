@@ -13,11 +13,11 @@ import org.jetbrains.skija.Font
  */
 abstract class PlaneDiagram(
     data: Data,
-    size: Float,
+    scale: Float,
     val cropBottom: Boolean,
     drawRulerLine: Boolean,
     drawHorizontalMarks: Boolean,
-) : Diagram(data, size) {
+) : Diagram(data, scale) {
 
     companion object {
         const val FONT_SIZE_COEFFICIENT = 0.03f

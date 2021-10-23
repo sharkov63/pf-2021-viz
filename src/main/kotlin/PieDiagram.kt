@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Data with negative values or with zero-sum is not allowed.
  */
-class PieDiagram(data: Data, size: Float) : Diagram(data, size) {
+class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
 
     companion object {
         const val FONT_SIZE_COEFFICIENT = 0.05f
@@ -69,15 +69,15 @@ class PieDiagram(data: Data, size: Float) : Diagram(data, size) {
      * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
-        val radius = size / 2
-        val font = getFontBySize(size)
+        val radius = scale / 2
+        val font = getFontBySize(scale)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
-        val blankWidth = size * BLANK_WIDTH_PROPORTION
+        val blankWidth = scale * BLANK_WIDTH_PROPORTION
         val x1 = x0 + maxLabelWidth + blankWidth
         val y1 = y0
-        val xc = x1 + size / 2
-        val yc = y1 + size / 2
+        val xc = x1 + scale / 2
+        val yc = y1 + scale / 2
 
         val paints = getPaints(data.size)
 
@@ -92,8 +92,8 @@ class PieDiagram(data: Data, size: Float) : Diagram(data, size) {
             canvas.drawArc(
                 x1,
                 y1,
-                x1 + size,
-                y1 + size,
+                x1 + scale,
+                y1 + scale,
                 arcStart,
                 arcLen,
                 true,
@@ -150,17 +150,17 @@ class PieDiagram(data: Data, size: Float) : Diagram(data, size) {
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val font = getFontBySize(size)
+        val font = getFontBySize(scale)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
-        val blankWidth = size * BLANK_WIDTH_PROPORTION
+        val blankWidth = scale * BLANK_WIDTH_PROPORTION
         val yStep = maxLabelHeight * LABEL_Y_STEP_PROPORTION
 
         return Rect(
             0f,
             0f,
-            maxLabelWidth + blankWidth + size,
-            max(size, yStep * data.size),
+            maxLabelWidth + blankWidth + scale,
+            max(scale, yStep * data.size),
         )
     }
 }

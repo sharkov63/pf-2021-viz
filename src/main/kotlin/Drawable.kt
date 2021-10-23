@@ -3,7 +3,7 @@ import org.jetbrains.skija.*
 /**
  * [Drawable] is anything that can be drawn on skija [Canvas].
  */
-abstract class Drawable(val size: Float) {
+abstract class Drawable() {
 
     companion object {
         const val PNG_PADDING = 5

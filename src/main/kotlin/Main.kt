@@ -11,8 +11,8 @@ fun main(args: Array<String>) {
         return exitEmptyData()
     }
 
-    val size = 400f
-    val diagram = getDiagram(data, size, diagramType)
+    val scale = 400f
+    val diagram = getDiagram(data, scale, diagramType)
 
     if (outputFile != null) {
         writeDiagramToPNGFile(outputFile, diagram)

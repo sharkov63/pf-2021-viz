@@ -44,7 +44,7 @@ fun unionRects(rect1: Rect, rect2: Rect) = Rect(
  * Contains diagram [data] and some statistics,
  * as well as abstract functions.
  */
-abstract class Diagram(val data: Data, size: Float) : Drawable(size) {
+abstract class Diagram(val data: Data, val scale: Float) : Drawable() {
     // TODO("Diagram title")
     // TODO("Add selectable options")
 
@@ -60,12 +60,12 @@ abstract class Diagram(val data: Data, size: Float) : Drawable(size) {
 }
 
 /**
- * Build [Diagram] with [data] of given [diagramType].
+ * Build [Diagram] with [data] of given [diagramType], with given [scale].
  */
-fun getDiagram(data: Data, size: Float, diagramType: DiagramType): Diagram {
+fun getDiagram(data: Data, scale: Float, diagramType: DiagramType): Diagram {
     return when (diagramType) {
-        DiagramType.BAR -> BarDiagram(data, size)
-        DiagramType.PIE -> PieDiagram(data, size)
-        DiagramType.LINE -> LineDiagram(data, size)
+        DiagramType.BAR -> BarDiagram(data, scale)
+        DiagramType.PIE -> PieDiagram(data, scale)
+        DiagramType.LINE -> LineDiagram(data, scale)
     }
 }
