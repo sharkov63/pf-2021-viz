@@ -9,7 +9,7 @@ import kotlin.math.*
  *
  * Data with negative values is not allowed.
  */
-class BarDiagram(data: Data, cropBottom: Boolean = false) : PlaneDiagram(data, cropBottom) {
+class BarDiagram(data: Data) : PlaneDiagram(data, false, false) {
 
     companion object {
         // Blue color for bars

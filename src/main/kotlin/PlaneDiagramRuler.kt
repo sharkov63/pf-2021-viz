@@ -1,7 +1,7 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
-class PlaneDiagramRuler(diagram: PlaneDiagram) {
+class PlaneDiagramRuler(diagram: PlaneDiagram, private val drawVerticalLine: Boolean) {
 
     companion object {
         const val RULER_LEAK = 5f
@@ -77,8 +77,6 @@ class PlaneDiagramRuler(diagram: PlaneDiagram) {
      * with y-range [y0]..[y1],
      * x-range [x0]..[x1],
      * and number labels with [font].
-     *
-     * One can choose to [drawVerticalLine] or not.
      */
     fun draw(
         canvas: Canvas,
@@ -87,7 +85,6 @@ class PlaneDiagramRuler(diagram: PlaneDiagram) {
         x0: Float,
         x1: Float,
         font: Font,
-        drawVerticalLine: Boolean = false,
     ) {
         val yStep = (y1 - y0) / rangeRel
         if (drawVerticalLine) {

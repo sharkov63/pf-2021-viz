@@ -9,13 +9,13 @@
  *
  * Incorporates [BarDiagram] and [LineDiagram].
  */
-abstract class PlaneDiagram(data: Data, val cropBottom: Boolean) : Diagram(data) {
+abstract class PlaneDiagram(data: Data, val cropBottom: Boolean, drawRulerLine: Boolean) : Diagram(data) {
 
     companion object {
         const val FONT_SIZE_COEFFICIENT = 0.03f
     }
 
-    val ruler = PlaneDiagramRuler(this)
+    val ruler = PlaneDiagramRuler(this, drawRulerLine)
     val horizontalLabels = PlaneDiagramHorizontalLabels(this)
 
 

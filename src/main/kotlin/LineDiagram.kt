@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Inherits from [PlaneDiagram]
  */
-class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, cropBottom) {
+class LineDiagram(data: Data) : PlaneDiagram(data, true, true) {
 
     companion object {
         const val GRAPH_COLOR_CODE = 0xFF4F86C6.toInt()
@@ -72,7 +72,6 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
             x0,
             x1 + xStep * (data.size - 1) + xMargin,
             font,
-            true,
         )
     }
 
