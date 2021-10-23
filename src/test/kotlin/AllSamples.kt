@@ -38,25 +38,30 @@ internal class AllSamples {
         }
     }
 
+    private fun checkSample(inputFile: File, diagramCode: String) {
+        val answerFileName = getAnswerFileName(inputFile, diagramCode)
+        val outputFileName = getOutputFileName(inputFile, diagramCode)
+        val answerFile = File(answerFileName)
+        val outputFile = File(outputFileName)
+        try {
+            main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", outputFileName))
+            assertEquals(answerFile.readText(), outputFile.readText())
+        } catch (ex: Exception) {
+            assertEquals("Exit block", ex.message)
+        } finally {
+            if (outputFile.exists())
+                outputFile.delete()
+        }
+        println("Checked $inputFile $diagramCode")
+    }
+
     @Test
     fun checkAllSamples() {
         val noExitSecurityManager = NoExitSecurityManager()
         System.setSecurityManager(noExitSecurityManager)
         txtFiles.forEach { inputFile ->
             diagramCodes.forEach { diagramCode ->
-                val answerFileName = getAnswerFileName(inputFile, diagramCode)
-                val outputFileName = getOutputFileName(inputFile, diagramCode)
-                val answerFile = File(answerFileName)
-                val outputFile = File(outputFileName)
-                try {
-                    main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", outputFileName))
-                    assertEquals(answerFile.readText(), outputFile.readText())
-                } catch (ex: Exception) {
-                    assertEquals("Exit block", ex.message)
-                } finally {
-                    if (outputFile.exists())
-                        outputFile.delete()
-                }
+                checkSample(inputFile, diagramCode)
             }
         }
     }
