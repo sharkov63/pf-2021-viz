@@ -19,15 +19,18 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
         const val X_STEP_INDENT_COEFFICIENT = 0.035f
     }
 
-    val xStep: Float
-    val xMargin: Float
+    private val xStep: Float
+    private val xMargin: Float
 
     init {
-        xStep = max(horizontalLabels.maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
+        xStep = calcXStep()
         xMargin = max(horizontalLabels.maxLabelWidth / 2, scale * MIN_X_MARGIN_COEFFICIENT)
     }
 
 
+    override fun calcXStep(): Float {
+        return max(horizontalLabels.maxLabelWidth + scale * X_STEP_INDENT_COEFFICIENT, scale * MIN_X_STEP_COEFFICIENT)
+    }
 
     /**
      * Draws diagram on [canvas] at top-left point [x0], [y0].
@@ -60,14 +63,5 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
         }
 
         ruler.draw(canvas, x0, y0, scale, x1 + xStep * (data.size - 1) + xMargin)
-    }
-
-    /**
-     * Get bounding [Rect] of diagram.
-     */
-    override fun bounds(): Rect {
-        val rulerBound = ruler.bounds(scale)
-        val horizontalLabelsBound = horizontalLabels.bounds(xStep, scale)
-        return unionRects(rulerBound, horizontalLabelsBound)
     }
 }

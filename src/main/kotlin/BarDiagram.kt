@@ -20,16 +20,17 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
         const val X_GAP_COEFFICIENT = 0.05f
     }
 
-    val barWidth: Float
-    val xGap: Float
-    val xStep: Float
+    private val barWidth: Float
+    private val xGap: Float
+
+    private val xStep: Float
 
     init {
         checkDataCorrectness()
 
         barWidth = max(horizontalLabels.maxLabelWidth + BAR_PADDING, scale * MIN_BAR_WIDTH_COEFFICIENT)
         xGap = scale * X_GAP_COEFFICIENT
-        xStep = barWidth + xGap
+        xStep = calcXStep()
     }
 
 
@@ -39,6 +40,11 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
         if (negativeElement != null) {
             exitNegativeValues(DiagramType.BAR, negativeElement)
         }
+    }
+
+
+    override fun calcXStep(): Float {
+        return barWidth + xGap
     }
 
 
@@ -59,14 +65,5 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
 
         horizontalLabels.draw(canvas, x0 + barWidth / 2, xStep, y1)
         ruler.draw(canvas, x0, y0, scale, x2)
-    }
-
-    /**
-     * Get bounding [Rect] of diagram.
-     */
-    override fun bounds(): Rect {
-        val rulerBound = ruler.bounds(scale)
-        val horizontalLabelsBound = horizontalLabels.bounds(xStep, scale)
-        return unionRects(rulerBound, horizontalLabelsBound)
     }
 }

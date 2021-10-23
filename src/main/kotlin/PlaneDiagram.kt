@@ -38,10 +38,22 @@ abstract class PlaneDiagram(
     }
 
 
+    abstract fun calcXStep(): Float
+
     /**
      * Get coordinates for value (y) axis, starting from [y0]
      */
     fun getYCoords(y0: Float): List<Float> {
         return data.map { y0 + scale - (it.value - ruler.begin) / ruler.range * scale }
+    }
+
+    /**
+     * Get bounding [Rect] of diagram.
+     */
+    override fun bounds(): Rect {
+        val xStep = calcXStep()
+        val rulerBounds = ruler.bounds(scale)
+        val horizontalLabelsBounds = horizontalLabels.bounds(xStep, scale)
+        return unionRects(rulerBounds, horizontalLabelsBounds)
     }
 }
