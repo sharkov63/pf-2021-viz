@@ -4,11 +4,16 @@ import kotlin.math.*
 // TODO("Area diagram")
 
 /**
- * This component contains [Diagram] classes,
+ * This component contains diagram classes,
  * and their drawing algorithms.
  */
 
 
+
+
+/**
+ * Supported diagram types.
+ */
 enum class DiagramType {
     BAR,
     PIE,
@@ -31,6 +36,20 @@ val diagramTypeByDescription = mapOf(
     "line" to DiagramType.LINE,
     "graph" to DiagramType.LINE,
 )
+
+/**
+ * Build [Diagram] with [data] of given [diagramType].
+ */
+fun getDiagram(data: Data, diagramType: DiagramType): Diagram {
+    return when (diagramType) {
+        DiagramType.BAR -> BarDiagram(data)
+        DiagramType.PIE -> PieDiagram(data)
+        DiagramType.LINE -> LineDiagram(data)
+    }
+}
+
+
+
 
 
 

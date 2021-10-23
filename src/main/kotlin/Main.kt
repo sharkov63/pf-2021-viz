@@ -4,23 +4,18 @@ fun main(args: Array<String>) {
         return exitHelp()
     }
 
-    val options = parseOptions(args.toList()) ?: return exitInvalidArgs()
+    val (inputFile, diagramType, outputFile) = parseOptions(args.toList()) ?: return exitInvalidArgs()
 
-    val data = readData(options.inputFile)
+    val data = readData(inputFile)
     if (data.isEmpty()) {
         return exitEmptyData()
     }
 
-    val diagram = when (options.diagramType) {
-        DiagramType.BAR -> BarDiagram(data)
-        DiagramType.PIE -> PieDiagram(data)
-        DiagramType.LINE -> LineDiagram(data)
-    }
-
+    val diagram = getDiagram(data, diagramType)
     val size = 400f
 
-    if (options.outputFile != null) {
-        writeDiagramToPNGFile(options.outputFile, diagram, size)
+    if (outputFile != null) {
+        writeDiagramToPNGFile(outputFile, diagram, size)
     }
 
     createDiagramWindow("pf-2021-viz", diagram, size)
