@@ -20,9 +20,9 @@ private fun ensureFile(file: File) {
 
 
 /**
- * Writes [diagram] with [size] to [file]
+ * Writes [diagram] with [size] to [file] in PNG format
  */
-fun writeDiagramToFile(file: File, diagram: Diagram, size: Float) {
+fun writeDiagramToPNGFile(file: File, diagram: Diagram, size: Float) {
     val bytes = diagram.getPNGData(size)
     requireNotNull(bytes)
     ensureFile(file)

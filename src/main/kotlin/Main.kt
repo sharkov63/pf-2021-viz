@@ -19,9 +19,8 @@ fun main(args: Array<String>) {
 
     val size = 400f
 
-    // PNG output
     if (options.outputFile != null) {
-        writeDiagramToFile(options.outputFile, diagram, size)
+        writeDiagramToPNGFile(options.outputFile, diagram, size)
     }
 
     createDiagramWindow("pf-2021-viz", diagram, size)
