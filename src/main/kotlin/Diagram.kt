@@ -78,6 +78,8 @@ abstract class Diagram(val data: Data) {
     // TODO("Diagram title")
     // TODO("Add selectable options")
 
+    val PNG_PADDING = 5
+
     val values = data.map { it.value }
     val labels = data.map { it.label }
 
@@ -112,14 +114,14 @@ abstract class Diagram(val data: Data) {
 
         val bitmap = Bitmap()
         bitmap.imageInfo = ImageInfo(
-            diagramBounds.width.toInt() + 2 * PADDING,
-            diagramBounds.height.toInt() + 2 * PADDING,
+            diagramBounds.width.toInt() + 2 * PNG_PADDING,
+            diagramBounds.height.toInt() + 2 * PNG_PADDING,
             ColorType.BGRA_8888,
             ColorAlphaType.PREMUL
         )
         bitmap.allocPixels()
         val canvas = Canvas(bitmap)
-        draw(canvas, -diagramBounds.left + PADDING, -diagramBounds.top + PADDING, size)
+        draw(canvas, -diagramBounds.left + PNG_PADDING, -diagramBounds.top + PNG_PADDING, size)
         canvas.readPixels(bitmap, 0, 0)
 
         val image = Image.makeFromBitmap(bitmap)
