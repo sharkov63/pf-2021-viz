@@ -12,9 +12,12 @@ import java.io.File
 
 // TODO("Add cropBottom option for line and bar diagrams")
 // TODO("Add --sort option")
-
+// TODO("Add -s (--size) option)
 
 data class Options(val inputFile: File?, val diagramType: DiagramType, val outputFile: File?)
+
+
+
 
 /**
  * Parses options from a list of program arguments.
