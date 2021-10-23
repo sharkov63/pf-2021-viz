@@ -17,8 +17,10 @@ import javax.swing.WindowConstants
 const val WINDOW_PADDING = 15
 const val CANVAS_UNIT = 1.1f
 
+
+
 /**
- * Create window and draw diagram on it.
+ * Create a window and draw [diagram] with size [size] on it.
  */
 fun createDiagramWindow(title: String, diagram: Diagram, size: Float) = runBlocking(Dispatchers.Swing) {
     val window = SkiaWindow()
@@ -27,8 +29,8 @@ fun createDiagramWindow(title: String, diagram: Diagram, size: Float) = runBlock
 
     window.layer.renderer = Renderer(window.layer, diagram, size)
 
+    // Predict diagram size in window
     val bounds = diagram.bounds(size)
-
     window.preferredSize = Dimension(
         (bounds.width * CANVAS_UNIT + 2 * WINDOW_PADDING).toInt(),
         (bounds.height * CANVAS_UNIT + 2 * WINDOW_PADDING).toInt()
@@ -39,8 +41,9 @@ fun createDiagramWindow(title: String, diagram: Diagram, size: Float) = runBlock
     window.isVisible = true
 }
 
+
 /**
- * A custom [SkiaRenderer] which would draw a diagram.
+ * A custom [SkiaRenderer] which would draw [diagram] with specified [size].
  */
 class Renderer(val layer: SkiaLayer, val diagram: Diagram, val size: Float): SkiaRenderer {
 
@@ -52,6 +55,11 @@ class Renderer(val layer: SkiaLayer, val diagram: Diagram, val size: Float): Ski
 
         // Draw diagram only once.
         // No need for layer.needRedraw()
-        diagram.draw(canvas, WINDOW_PADDING -bounds.left, WINDOW_PADDING - bounds.top, size)
+        diagram.draw(
+            canvas,
+            WINDOW_PADDING - bounds.left,
+            WINDOW_PADDING - bounds.top,
+            size
+        )
     }
 }
