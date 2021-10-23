@@ -24,8 +24,7 @@ internal class AllSamples {
 
     //@Test
     fun createAllAnswerImages() {
-        val noExitSecurityManager = NoExitSecurityManager()
-        System.setSecurityManager(noExitSecurityManager)
+        System.setSecurityManager(NoExitSecurityManager())
         txtFiles.forEach { inputFile ->
             diagramCodes.forEach { diagramCode ->
                 val answerFileName = getAnswerFileName(inputFile, diagramCode)
