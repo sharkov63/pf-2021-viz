@@ -92,9 +92,8 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
         val x1 = x0 + maxLabelWidth + blankWidth
-        val y1 = y0
         val xc = x1 + radius
-        val yc = y1 + radius
+        val yc = y0 + radius
 
         // Sectors (arcs) geometry
         val arcLens = values.map { (it * 360f / sumValues) }
@@ -106,9 +105,9 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
             val arcStart = arcStarts[i]
             canvas.drawArc(
                 x1,
-                y1,
+                y0,
                 x1 + scale,
-                y1 + scale,
+                y0 + scale,
                 arcStart,
                 arcLen,
                 true,
