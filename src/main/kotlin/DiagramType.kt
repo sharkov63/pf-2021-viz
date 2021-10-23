@@ -22,6 +22,8 @@ val diagramTypeByDescription = mapOf(
     "round" to DiagramType.PIE,
     "line" to DiagramType.LINE,
     "graph" to DiagramType.LINE,
+    "plot" to DiagramType.LINE,
+    "curve" to DiagramType.LINE,
 )
 
 fun parseDiagramType(text: String): DiagramType {
