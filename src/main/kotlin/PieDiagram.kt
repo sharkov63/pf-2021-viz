@@ -30,13 +30,29 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
         )
     }
 
+    val paints: List<Paint>
+
     val font: Font
+    val radius: Float
+    val maxLabelWidth: Float
+    val maxLabelHeight: Float
+    val blankWidth: Float
+    val yStep: Float
 
     init {
         checkDataCorrectness()
 
+        paints = getPaints(data.size)
+
+        // Prepare geometry
         font = FONT.makeWithSize(scale * FONT_SIZE_COEFFICIENT)
+        radius = scale / 2
+        maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
+        maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
+        blankWidth = scale * BLANK_WIDTH_PROPORTION
+        yStep = maxLabelHeight * LABEL_Y_STEP_PROPORTION
     }
+
 
 
     private fun checkDataCorrectness() {
@@ -75,16 +91,10 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
      * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
-        val radius = scale / 2
-        val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
-        val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
-        val blankWidth = scale * BLANK_WIDTH_PROPORTION
         val x1 = x0 + maxLabelWidth + blankWidth
         val y1 = y0
-        val xc = x1 + scale / 2
-        val yc = y1 + scale / 2
-
-        val paints = getPaints(data.size)
+        val xc = x1 + radius
+        val yc = y1 + radius
 
         // Sectors (arcs) geometry
         val arcLens = values.map { (it * 360f / sumValues) }
@@ -109,10 +119,8 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
         // Draw labels
         val colorBoxSz = maxLabelHeight * COLOR_BOX_HEIGHT_PROPORTION
         val colorBoxMarginX = (maxLabelHeight - colorBoxSz) / 2
-        val yStep = maxLabelHeight * LABEL_Y_STEP_PROPORTION
-        var yCur = y0 + yStep
-        for (i in labels.indices) {
-            val label = labels[i]
+        labels.forEachIndexed { i, label ->
+            val yCur = y0 + yStep * (i + 1)
             val labelWidth = font.measureTextWidth(label)
             val labelHeight = font.measureText(label).height
 
@@ -146,25 +154,16 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
 
             // Draw label
             canvas.drawString(label, x0 + maxLabelHeight, yCur, font, BLACK_FILL_PAINT)
-
-            yCur += yStep
         }
     }
 
     /**
      * Get bounding [Rect] of diagram.
      */
-    override fun bounds(): Rect {
-        val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
-        val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
-        val blankWidth = scale * BLANK_WIDTH_PROPORTION
-        val yStep = maxLabelHeight * LABEL_Y_STEP_PROPORTION
-
-        return Rect(
-            0f,
-            0f,
-            maxLabelWidth + blankWidth + scale,
-            max(scale, yStep * data.size),
-        )
-    }
+    override fun bounds() = Rect(
+        0f,
+        0f,
+        maxLabelWidth + blankWidth + scale,
+        max(scale, yStep * data.size),
+    )
 }
