@@ -80,13 +80,14 @@ class PlaneDiagramRuler(diagram: PlaneDiagram, private val drawVerticalLine: Boo
      */
     fun draw(
         canvas: Canvas,
-        y0: Float,
-        y1: Float,
         x0: Float,
+        y0: Float,
+        size: Float,
         x1: Float,
         font: Font,
     ) {
-        val yStep = (y1 - y0) / rangeRel
+        val y1 = y0 + size
+        val yStep = size / rangeRel
         if (drawVerticalLine) {
             canvas.drawLine(x0 - RULER_LEAK, y1, x0 - RULER_LEAK, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
         }

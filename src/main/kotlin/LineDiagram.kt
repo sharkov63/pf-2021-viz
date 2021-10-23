@@ -67,9 +67,9 @@ class LineDiagram(data: Data) : PlaneDiagram(data, true, true) {
 
         ruler.draw(
             canvas,
-            y0,
-            y1,
             x0,
+            y0,
+            size,
             x1 + xStep * (data.size - 1) + xMargin,
             font,
         )

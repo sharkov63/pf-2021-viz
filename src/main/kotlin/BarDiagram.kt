@@ -66,9 +66,9 @@ class BarDiagram(data: Data) : PlaneDiagram(data, false, false) {
 
         ruler.draw(
             canvas,
-            y0,
-            y1,
             x0,
+            y0,
+            size,
             x2,
             font,
         )
