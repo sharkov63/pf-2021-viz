@@ -42,6 +42,9 @@ class PieDiagram(data: Data) : Diagram(data) {
     }
 
 
+    fun getFontBySize(size: Float): Font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT)
+
+
     /**
      * Forms a list of colors for diagram.
      */
@@ -67,7 +70,7 @@ class PieDiagram(data: Data) : Diagram(data) {
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float) {
         val radius = size / 2
-        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT)
+        val font = getFontBySize(size)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
         val blankWidth = size * BLANK_WIDTH_PROPORTION
@@ -144,7 +147,7 @@ class PieDiagram(data: Data) : Diagram(data) {
     }
 
     override fun bounds(size: Float): Rect {
-        val font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT)
+        val font = getFontBySize(size)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
         val blankWidth = size * BLANK_WIDTH_PROPORTION

@@ -1,3 +1,5 @@
+import org.jetbrains.skija.Font
+
 /**
  * Diagram on a 2D plane:
  * y-axis is for values;
@@ -18,6 +20,11 @@ abstract class PlaneDiagram(data: Data, val cropBottom: Boolean, drawRulerLine: 
     val ruler = PlaneDiagramRuler(this, drawRulerLine)
     val horizontalLabels = PlaneDiagramHorizontalLabels(this)
 
+
+
+    fun getFontBySize(size: Float): Font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT).apply {
+        isEmboldened = true // bold labels
+    }
 
     /**
      * Get coordinates for value (y) axis on range [y0]..[y1]
