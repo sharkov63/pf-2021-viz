@@ -23,7 +23,6 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
      * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
-        val font = getFontBySize(scale)
         val linePaint = fillPaintByColorCode(GRAPH_COLOR_CODE).apply {
             strokeWidth = LINE_STROKE_WIDTH_COEFFICIENT * scale
         }
@@ -62,8 +61,6 @@ class LineDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, true, tr
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val font = getFontBySize(scale)
-
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
         }

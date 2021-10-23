@@ -30,7 +30,16 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
         )
     }
 
-    init { // Check for data correctness
+    val font: Font
+
+    init {
+        checkDataCorrectness()
+
+        font = FONT.makeWithSize(scale * FONT_SIZE_COEFFICIENT)
+    }
+
+
+    private fun checkDataCorrectness() {
         val negativeElement = data.find { it.value < 0 }
         if (negativeElement != null) {
             exitNegativeValues(DiagramType.PIE, negativeElement)
@@ -40,9 +49,6 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
             exitPieZeroSum()
         }
     }
-
-
-    fun getFontBySize(size: Float): Font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT)
 
 
     /**
@@ -70,7 +76,6 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
         val radius = scale / 2
-        val font = getFontBySize(scale)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
         val blankWidth = scale * BLANK_WIDTH_PROPORTION
@@ -150,7 +155,6 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val font = getFontBySize(scale)
         val maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
         val maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
         val blankWidth = scale * BLANK_WIDTH_PROPORTION

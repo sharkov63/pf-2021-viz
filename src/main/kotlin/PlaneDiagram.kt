@@ -23,14 +23,20 @@ abstract class PlaneDiagram(
         const val FONT_SIZE_COEFFICIENT = 0.03f
     }
 
-    val ruler = PlaneDiagramRuler(this, drawRulerLine)
-    val horizontalLabels = PlaneDiagramHorizontalLabels(this, drawHorizontalMarks)
+    val ruler: PlaneDiagramRuler
+    val horizontalLabels: PlaneDiagramHorizontalLabels
+
+    val font: Font
 
 
-
-    fun getFontBySize(size: Float): Font = FONT.makeWithSize(size * FONT_SIZE_COEFFICIENT).apply {
-        isEmboldened = true // bold labels
+    init {
+        ruler = PlaneDiagramRuler(this, drawRulerLine)
+        horizontalLabels = PlaneDiagramHorizontalLabels(this, drawHorizontalMarks)
+        font = FONT.makeWithSize(scale * FONT_SIZE_COEFFICIENT).apply {
+            isEmboldened = true // bold labels
+        }
     }
+
 
     /**
      * Get coordinates for value (y) axis on range [y0]..[y1]

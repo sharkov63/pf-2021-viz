@@ -7,17 +7,15 @@ class PlaneDiagramHorizontalLabels(val diagram: PlaneDiagram, private val drawMa
         const val HORIZONTAL_LABELS_INDENT = 5f
     }
 
-
     /**
      * Draw labels on x-axis on [canvas]
      * starting from x=[x0],
-     * with size=[size],
+     * with scale=[scale],
      * with x-step [dx],
      * on y-level [y].
      */
-    fun draw(canvas: Canvas, x0: Float, size: Float, dx: Float, y: Float) {
-        val font = diagram.getFontBySize(size)
-        val labelRects = diagram.labels.map { label -> font.measureText(label) }
+    fun draw(canvas: Canvas, x0: Float, scale: Float, dx: Float, y: Float) {
+        val labelRects = diagram.labels.map { label -> diagram.font.measureText(label) }
         val labelWidths = labelRects.map { rect -> rect.width }
         val labelHeights = labelRects.map { rect -> rect.height }
         val maxLabelHeight = labelHeights.maxOf { it }
@@ -36,7 +34,7 @@ class PlaneDiagramHorizontalLabels(val diagram: PlaneDiagram, private val drawMa
                 label,
                 xMid - labelWidths[i] / 2,
                 y + maxLabelHeight + HORIZONTAL_LABELS_INDENT,
-                font,
+                diagram.font,
                 BLACK_FILL_PAINT
             )
         }
@@ -44,11 +42,10 @@ class PlaneDiagramHorizontalLabels(val diagram: PlaneDiagram, private val drawMa
 
     /**
      * Get bounding [Rect] of horizontal labels,
-     * if it's drawn with size=[size], x-step=[dx] on level [y].
+     * if it's drawn with scale=[scale], x-step=[dx] on level [y].
      */
-    fun bounds(size: Float, dx: Float, y: Float): Rect {
-        val font = diagram.getFontBySize(size)
-        val labelRects = diagram.labels.map { label -> font.measureText(label) }
+    fun bounds(scale: Float, dx: Float, y: Float): Rect {
+        val labelRects = diagram.labels.map { label -> diagram.font.measureText(label) }
         val labelWidths = labelRects.map { rect -> rect.width }
         val labelHeights = labelRects.map { rect -> rect.height }
         val maxLabelHeight = labelHeights.maxOf { it }

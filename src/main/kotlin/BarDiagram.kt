@@ -20,7 +20,13 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
         const val X_GAP_COEFFICIENT = 0.05f
     }
 
-    init { // Check for data correctness
+    init {
+        checkDataCorrectness()
+    }
+
+
+
+    fun checkDataCorrectness() {
         val negativeElement = data.find { it.value < 0 }
         if (negativeElement != null) {
             exitNegativeValues(DiagramType.BAR, negativeElement)
@@ -32,7 +38,6 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
      * Draws diagram on [canvas] at top-left point [x0], [y0].
      */
     override fun draw(canvas: Canvas, x0: Float, y0: Float) {
-        val font = getFontBySize(scale)
         val y1 = y0 + scale
 
         // Prepare geometric values
@@ -61,8 +66,6 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false, fa
      * Get bounding [Rect] of diagram.
      */
     override fun bounds(): Rect {
-        val font = getFontBySize(scale)
-
         val maxLabelWidth = labels.maxOf { label ->
             font.measureTextWidth(label)
         }
