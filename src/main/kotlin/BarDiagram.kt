@@ -9,7 +9,7 @@ import kotlin.math.*
  *
  * Data with negative values is not allowed.
  */
-class BarDiagram(data: Data) : PlaneDiagram(data, false, false) {
+class BarDiagram(data: Data) : PlaneDiagram(data, false, false, false) {
 
     companion object {
         // Blue color for bars
@@ -52,14 +52,7 @@ class BarDiagram(data: Data) : PlaneDiagram(data, false, false) {
             canvas.drawRect(Rect(x, y, x + barWidth, y1), BAR_PAINT)
         }
 
-        horizontalLabels.draw(
-            canvas,
-            x0 + barWidth / 2,
-            size,
-            xStep,
-            y1,
-            false,
-        )
+        horizontalLabels.draw(canvas, x0 + barWidth / 2, size, xStep, y1)
 
         ruler.draw(canvas, x0, y0, size, x2)
     }

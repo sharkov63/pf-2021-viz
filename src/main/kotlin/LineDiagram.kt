@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Inherits from [PlaneDiagram]
  */
-class LineDiagram(data: Data) : PlaneDiagram(data, true, true) {
+class LineDiagram(data: Data) : PlaneDiagram(data, true, true, true) {
 
     companion object {
         const val GRAPH_COLOR_CODE = 0xFF4F86C6.toInt()
@@ -47,14 +47,7 @@ class LineDiagram(data: Data) : PlaneDiagram(data, true, true) {
             .flatMap { (x, y) -> listOf(x, y) }
             .toFloatArray()
 
-        horizontalLabels.draw(
-            canvas,
-            x1,
-            size,
-            xStep,
-            y1,
-            true,
-        )
+        horizontalLabels.draw(canvas, x1, size, xStep, y1)
 
         // Draw lines and points
         canvas.drawPolygon(pointsFlatten, linePaint)

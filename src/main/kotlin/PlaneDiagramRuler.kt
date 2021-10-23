@@ -82,6 +82,7 @@ class PlaneDiagramRuler(val diagram: PlaneDiagram, private val drawVerticalLine:
         val font = diagram.getFontBySize(size)
         val y1 = y0 + size
         val yStep = size / rangeRel
+
         if (drawVerticalLine) {
             canvas.drawLine(x0 - RULER_LEAK, y1, x0 - RULER_LEAK, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
         }

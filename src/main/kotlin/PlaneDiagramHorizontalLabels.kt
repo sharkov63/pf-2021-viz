@@ -1,8 +1,6 @@
-import org.jetbrains.skija.Canvas
-import org.jetbrains.skija.Font
-import org.jetbrains.skija.Rect
+import org.jetbrains.skija.*
 
-class PlaneDiagramHorizontalLabels(val diagram: PlaneDiagram) {
+class PlaneDiagramHorizontalLabels(val diagram: PlaneDiagram, private val drawMarks: Boolean) {
 
     companion object {
         const val MARK_LEAK = 3f
@@ -16,10 +14,8 @@ class PlaneDiagramHorizontalLabels(val diagram: PlaneDiagram) {
      * with size=[size],
      * with x-step [dx],
      * on y-level [y].
-     *
-     * One can choose to [drawMarks] or not (useful only for line diagram so far).
      */
-    fun draw(canvas: Canvas, x0: Float, size: Float, dx: Float, y: Float, drawMarks: Boolean) {
+    fun draw(canvas: Canvas, x0: Float, size: Float, dx: Float, y: Float) {
         val font = diagram.getFontBySize(size)
         val labelRects = diagram.labels.map { label -> font.measureText(label) }
         val labelWidths = labelRects.map { rect -> rect.width }
