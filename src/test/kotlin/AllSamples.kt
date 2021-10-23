@@ -32,7 +32,7 @@ internal class AllSamples {
                 try {
                     main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", answerFileName))
                 } catch (ex: Exception) {
-
+                    assertEquals("Exit block", ex.message)
                 }
             }
         }
@@ -52,7 +52,7 @@ internal class AllSamples {
                     main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", outputFileName))
                     assertEquals(answerFile.readText(), outputFile.readText())
                 } catch (ex: Exception) {
-
+                    assertEquals("Exit block", ex.message)
                 } finally {
                     if (outputFile.exists())
                         outputFile.delete()
