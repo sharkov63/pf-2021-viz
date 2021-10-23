@@ -3,10 +3,8 @@ import kotlin.math.*
 
 // TODO("Area diagram")
 
-/**
- * This component contains diagram classes,
- * and their drawing algorithms.
- */
+
+
 
 /* Paints */
 
@@ -46,11 +44,9 @@ fun unionRects(rect1: Rect, rect2: Rect) = Rect(
  * Contains diagram [data] and some statistics,
  * as well as abstract functions.
  */
-abstract class Diagram(val data: Data) {
+abstract class Diagram(val data: Data) : Drawable() {
     // TODO("Diagram title")
     // TODO("Add selectable options")
-
-    val PNG_PADDING = 5
 
     val values = data.map { it.value }
     val labels = data.map { it.label }
@@ -61,45 +57,6 @@ abstract class Diagram(val data: Data) {
     val sumValues = values
         .sumOf { it.toDouble() }
         .toFloat()
-
-
-    /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0] with size [size].
-     *
-     * This function should only be called
-     * on specific subclasses of [Diagram] class.
-     */
-    abstract fun draw(canvas: Canvas, x0: Float, y0: Float, size: Float)
-
-    /**
-     * Predicts bounding rectangle,
-     * if the diagram will be drawn at x0 = y0 = 0 with size [size]
-     */
-    abstract fun bounds(size: Float): Rect
-
-
-    /**
-     * Returns the PNG data of the diagram.
-     */
-    fun getPNGData(size: Float): ByteArray? {
-        val diagramBounds = bounds(size)
-
-        val bitmap = Bitmap()
-        bitmap.imageInfo = ImageInfo(
-            diagramBounds.width.toInt() + 2 * PNG_PADDING,
-            diagramBounds.height.toInt() + 2 * PNG_PADDING,
-            ColorType.BGRA_8888,
-            ColorAlphaType.PREMUL
-        )
-        bitmap.allocPixels()
-        val canvas = Canvas(bitmap)
-        draw(canvas, -diagramBounds.left + PNG_PADDING, -diagramBounds.top + PNG_PADDING, size)
-        canvas.readPixels(bitmap, 0, 0)
-
-        val image = Image.makeFromBitmap(bitmap)
-        val pngData = image.encodeToData(EncodedImageFormat.PNG) ?: return null
-        return pngData.bytes
-    }
 }
 
 /**
