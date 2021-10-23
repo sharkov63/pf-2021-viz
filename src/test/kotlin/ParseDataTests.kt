@@ -1,6 +1,6 @@
 import kotlin.test.*
 
-internal class ReadDataTests {
+internal class ParseDataTests {
 
     @Test
     fun `parseDataElementOrNull Correct`() {
