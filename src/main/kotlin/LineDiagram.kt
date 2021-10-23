@@ -50,7 +50,7 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
             .flatMap { (x, y) -> listOf(x, y) }
             .toFloatArray()
 
-        drawHorizontalLabels(
+        horizontalLabels.draw(
             canvas,
             x1,
             xStep,
@@ -86,8 +86,8 @@ class LineDiagram(data: Data, cropBottom: Boolean = true) : PlaneDiagram(data, c
         }
         val xStep = max(maxLabelWidth + size * X_STEP_INDENT_COEFFICIENT, size * MIN_X_STEP_COEFFICIENT)
 
-        val rulerBound = ruler.bound(size, font)
-        val horizontalLabelsBound = horizontalLabelsBound(xStep, size, font)
+        val rulerBound = ruler.bounds(size, font)
+        val horizontalLabelsBound = horizontalLabels.bounds(xStep, size, font)
         return unionRects(rulerBound, horizontalLabelsBound)
     }
 }
