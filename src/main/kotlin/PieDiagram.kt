@@ -117,7 +117,6 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
             )
         }
 
-        println(maxLabelHeight / scale)
         // Draw labels
         val colorBoxSz = maxLabelHeight * COLOR_BOX_HEIGHT_PROPORTION
         val colorBoxMarginX = (maxLabelHeight - colorBoxSz) / 2
@@ -155,11 +154,6 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
 
             // Draw label
             canvas.drawString(label, x0 + maxLabelHeight, yCur - (yStep - maxLabelHeight) / 2 - LABEL_Y_OFFSET, font, BLACK_FILL_PAINT)
-
-//            canvas.drawLine(x0, yCur, x0 + 1000, yCur, BLACK_FILL_PAINT)
-//            canvas.drawLine(x0, yCur - yStep, x0 + 1000, yCur - yStep, BLACK_FILL_PAINT)
-//            canvas.drawLine(x0, yCur - (yStep - labelHeight) / 2, x0 + 1000, yCur - (yStep - labelHeight) / 2, LIGHT_GREY_STROKE_PAINT)
-//            canvas.drawLine(x0, yCur - yStep + (yStep - labelHeight) / 2, x0 + 1000, yCur - yStep +  (yStep - labelHeight) / 2, LIGHT_GREY_STROKE_PAINT)
         }
     }
 
