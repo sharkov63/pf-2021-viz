@@ -15,6 +15,8 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
         const val COLOR_BOX_HEIGHT_PROPORTION = 0.7f
         const val LABEL_Y_STEP_PROPORTION = 1.3f
         const val LABEL_LINE_INDENT = 10f
+        const val MIN_MAX_LABEL_HEIGHT_TO_SCALE = 0.035f
+        const val LABEL_Y_OFFSET = 3f
 
         val COLOR_PALLET = listOf(
             0xca3f3f,
@@ -48,7 +50,7 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
         font = FONT.makeWithSize(scale * FONT_SIZE_COEFFICIENT)
         radius = scale / 2
         maxLabelWidth = labels.maxOf { font.measureTextWidth(it, BLACK_FILL_PAINT) }
-        maxLabelHeight = labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }
+        maxLabelHeight = max(labels.maxOf { font.measureText(it, BLACK_FILL_PAINT).height }, MIN_MAX_LABEL_HEIGHT_TO_SCALE * scale)
         blankWidth = scale * BLANK_WIDTH_PROPORTION
         yStep = maxLabelHeight * LABEL_Y_STEP_PROPORTION
     }
@@ -115,22 +117,22 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
             )
         }
 
+        println(maxLabelHeight / scale)
         // Draw labels
         val colorBoxSz = maxLabelHeight * COLOR_BOX_HEIGHT_PROPORTION
         val colorBoxMarginX = (maxLabelHeight - colorBoxSz) / 2
         labels.forEachIndexed { i, label ->
             val yCur = y0 + yStep * (i + 1)
             val labelWidth = font.measureTextWidth(label)
-            val labelHeight = font.measureText(label).height
 
             // Draw color box
-            val colorBoxMarginY = (labelHeight - colorBoxSz) / 2
+            val colorBoxMarginY = (yStep - colorBoxSz) / 2
             val colorBoxFill = paints[i % paints.size]
             val colorBox = Rect(
                 x0 + colorBoxMarginX,
-                yCur - labelHeight + colorBoxMarginY,
+                yCur - yStep + colorBoxMarginY,
                 x0 + colorBoxMarginX + colorBoxSz,
-                yCur - labelHeight + colorBoxMarginY + colorBoxSz,
+                yCur - yStep + colorBoxMarginY + colorBoxSz,
             )
             canvas.drawRect(colorBox, colorBoxFill)
             canvas.drawRect(colorBox, BLACK_STROKE_PAINT)
@@ -143,8 +145,8 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
                 val y = yc + radius / 2 * sin(arcMidRad)
                 canvas.drawPolygon(
                     floatArrayOf(
-                        x0 + maxLabelHeight + labelWidth + LABEL_LINE_INDENT, yCur - labelHeight / 2,
-                        x0 + maxLabelHeight + maxLabelWidth + LABEL_LINE_INDENT, yCur - labelHeight / 2,
+                        x0 + maxLabelHeight + labelWidth + LABEL_LINE_INDENT, yCur - yStep / 2,
+                        x0 + maxLabelHeight + maxLabelWidth + LABEL_LINE_INDENT, yCur - yStep / 2,
                         x, y,
                     ),
                     LIGHT_GREY_STROKE_PAINT,
@@ -152,7 +154,12 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
             }
 
             // Draw label
-            canvas.drawString(label, x0 + maxLabelHeight, yCur, font, BLACK_FILL_PAINT)
+            canvas.drawString(label, x0 + maxLabelHeight, yCur - (yStep - maxLabelHeight) / 2 - LABEL_Y_OFFSET, font, BLACK_FILL_PAINT)
+
+//            canvas.drawLine(x0, yCur, x0 + 1000, yCur, BLACK_FILL_PAINT)
+//            canvas.drawLine(x0, yCur - yStep, x0 + 1000, yCur - yStep, BLACK_FILL_PAINT)
+//            canvas.drawLine(x0, yCur - (yStep - labelHeight) / 2, x0 + 1000, yCur - (yStep - labelHeight) / 2, LIGHT_GREY_STROKE_PAINT)
+//            canvas.drawLine(x0, yCur - yStep + (yStep - labelHeight) / 2, x0 + 1000, yCur - yStep +  (yStep - labelHeight) / 2, LIGHT_GREY_STROKE_PAINT)
         }
     }
 
