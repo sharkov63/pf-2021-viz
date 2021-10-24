@@ -1,6 +1,29 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
+
+const val DEFAULT_DIAGRAM_PADDING = 50f
+const val MIN_DIAGRAM_PADDING = 0f
+const val MAX_DIAGRAM_PADDING = 1000f
+val diagramPaddingOptionParser = FloatValuedOptionParser(
+    "diagram padding",
+    DEFAULT_DIAGRAM_PADDING,
+    MIN_DIAGRAM_PADDING,
+    MAX_DIAGRAM_PADDING
+)
+
+const val DEFAULT_DIAGRAM_SCALE = 400f
+const val MIN_DIAGRAM_SCALE = 100f
+const val MAX_DIAGRAM_SCALE = 2000f
+val diagramScaleOptionParser = FloatValuedOptionParser(
+    "diagram scale",
+    DEFAULT_DIAGRAM_SCALE,
+    MIN_DIAGRAM_SCALE,
+    MAX_DIAGRAM_SCALE
+)
+
+
+
 /* Paints */
 
 fun fillPaintByColorCode(colorCode: Int) = Paint().apply {
@@ -39,9 +62,8 @@ fun unionRects(rect1: Rect, rect2: Rect) = Rect(
  * Contains diagram [data] and some statistics,
  * as well as abstract functions.
  */
-abstract class Diagram(val data: Data, val scale: Float) : Drawable() {
+abstract class Diagram(val data: Data, val scale: Float, val padding: Float) : Drawable() {
     // TODO("Diagram title")
-    // TODO("Add selectable options")
 
     val values = data.map { it.value }
     val labels = data.map { it.label }
@@ -55,13 +77,13 @@ abstract class Diagram(val data: Data, val scale: Float) : Drawable() {
 }
 
 /**
- * Build [Diagram] with [data] of given [diagramType], with given [scale].
+ * Build [Diagram] with [data] of given [type], with given [scale] and [padding].
  */
-fun getDiagram(data: Data, scale: Float, diagramType: DiagramType): Diagram {
-    return when (diagramType) {
-        DiagramType.BAR -> BarDiagram(data, scale)
-        DiagramType.PIE -> PieDiagram(data, scale)
-        DiagramType.LINE -> LineDiagram(data, scale, false)
-        DiagramType.AREA -> LineDiagram(data, scale, true)
+fun getDiagram(data: Data, scale: Float, padding: Float, type: DiagramType): Diagram {
+    return when (type) {
+        DiagramType.BAR -> BarDiagram(data, scale, padding)
+        DiagramType.PIE -> PieDiagram(data, scale, padding)
+        DiagramType.LINE -> LineDiagram(data, scale, padding, false)
+        DiagramType.AREA -> LineDiagram(data, scale, padding, true)
     }
 }

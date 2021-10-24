@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Data with negative values or with zero-sum is not allowed.
  */
-class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
+class PieDiagram(data: Data, scale: Float, padding: Float) : Diagram(data, scale, padding) {
 
     companion object {
         const val FONT_SIZE_COEFFICIENT = 0.05f
@@ -90,9 +90,11 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
 
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0].
+     * Draws diagram on [canvas] at pivot point [pivotX], [pivotY].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
+    override fun draw(canvas: Canvas, pivotX: Float, pivotY: Float) {
+        val x0 = pivotX + padding
+        val y0 = pivotY + padding
         val x1 = x0 + maxLabelWidth + blankWidth
         val xc = x1 + radius
         val yc = y0 + radius
@@ -163,7 +165,7 @@ class PieDiagram(data: Data, scale: Float) : Diagram(data, scale) {
     override fun bounds() = Rect(
         0f,
         0f,
-        maxLabelWidth + blankWidth + scale,
-        max(scale, yStep * data.size),
+        maxLabelWidth + blankWidth + scale + 2 * padding,
+        max(scale, yStep * data.size) + 2 * padding,
     )
 }

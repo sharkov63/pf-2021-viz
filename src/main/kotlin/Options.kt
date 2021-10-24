@@ -13,13 +13,13 @@ import java.io.File
  *         --nsort, --no-sort --- leave order as is;
  *     -d, --diagram --- for diagram type;
  *     -s, --scale --- for diagram scale;
+ *     -p, --padding --- for diagram padding;
  *     -o, --output --- for output file;
  *     --no-window --- to not create window;
  *     --silent, --quiet --- to enable silent mode;
  */
 
 // TODO("Add cropBottom option for line and bar diagrams")
-// TODO("Add custom padding")
 
 
 enum class Option(val requiresArgument: Boolean) {
@@ -27,6 +27,7 @@ enum class Option(val requiresArgument: Boolean) {
     SORT_OPTION(false),
     DIAGRAM_TYPE(true),
     DIAGRAM_SCALE(true),
+    DIAGRAM_PADDING(true),
     OUTPUT_FILE(true),
     NO_WINDOW_OPTION(false),
     SILENT_MODE(false),
@@ -46,6 +47,7 @@ fun getOptionByKeywordOrNull(keyword: String): Option? {
         "--nsort", "--no-sort" -> Option.SORT_OPTION
         "-d", "--diagram" -> Option.DIAGRAM_TYPE
         "-s", "--scale" -> Option.DIAGRAM_SCALE
+        "-p", "--padding" -> Option.DIAGRAM_PADDING
         "-o", "--output" -> Option.OUTPUT_FILE
         "--no-window" -> Option.NO_WINDOW_OPTION
         "--silent", "--quiet" -> Option.SILENT_MODE

@@ -11,7 +11,7 @@ import org.jetbrains.skija.*
  *
  * Incorporates [BarDiagram] and [LineDiagram].
  */
-abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) : Diagram(data, scale) {
+abstract class PlaneDiagram(data: Data, scale: Float, padding: Float, val cropBottom: Boolean) : Diagram(data, scale, padding) {
 
     companion object {
         const val FONT_SIZE_COEFFICIENT = 0.03f
@@ -57,6 +57,12 @@ abstract class PlaneDiagram(data: Data, scale: Float, val cropBottom: Boolean) :
     override fun bounds(): Rect {
         val rulerBounds = ruler.bounds()
         val horizontalLabelsBounds = horizontalLabels.bounds().offset(xMargin, scale)
-        return unionRects(rulerBounds, horizontalLabelsBounds)
+        val union = unionRects(rulerBounds, horizontalLabelsBounds)
+        return Rect(
+            union.left,
+            union.top,
+            union.right + 2 * padding,
+            union.bottom + 2 * padding,
+        )
     }
 }

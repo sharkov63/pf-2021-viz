@@ -7,7 +7,7 @@ import kotlin.math.*
  *
  * Inherits from [PlaneDiagram]
  */
-class LineDiagram(data: Data, scale: Float, val fillArea: Boolean) : PlaneDiagram(data, scale, !fillArea) {
+class LineDiagram(data: Data, scale: Float, padding: Float, val fillArea: Boolean) : PlaneDiagram(data, scale, padding, !fillArea) {
 
     companion object {
         const val GRAPH_COLOR_CODE = 0xFF4F86C6.toInt()
@@ -53,9 +53,9 @@ class LineDiagram(data: Data, scale: Float, val fillArea: Boolean) : PlaneDiagra
 
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0].
+     * Draws diagram on [canvas] at pivot point [pivotX], [pivotY].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
+    override fun draw(canvas: Canvas, pivotX: Float, pivotY: Float) {
         val linePaint = fillPaintByColorCode(GRAPH_COLOR_CODE).apply {
             strokeWidth = LINE_STROKE_WIDTH_COEFFICIENT * scale
         }
@@ -66,6 +66,8 @@ class LineDiagram(data: Data, scale: Float, val fillArea: Boolean) : PlaneDiagra
         }
 
         // Prepare geometric values
+        val x0 = pivotX + padding
+        val y0 = pivotY + padding
         val y1 = y0 + scale
         val yCoords = getYCoords(y0)
         val x1 = x0 + xMargin

@@ -9,7 +9,7 @@ import kotlin.math.*
  *
  * Data with negative values is not allowed.
  */
-class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
+class BarDiagram(data: Data, scale: Float, padding: Float) : PlaneDiagram(data, scale, padding, false) {
 
     companion object {
         // Blue color for bars
@@ -52,9 +52,11 @@ class BarDiagram(data: Data, scale: Float) : PlaneDiagram(data, scale, false) {
 
 
     /**
-     * Draws diagram on [canvas] at top-left point [x0], [y0].
+     * Draws diagram on [canvas] at pivot point [pivotX], [pivotY].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
+    override fun draw(canvas: Canvas, pivotX: Float, pivotY: Float) {
+        val x0 = pivotX + padding
+        val y0 = pivotY + padding
         val y1 = y0 + scale
         val yCoords = getYCoords(y0)
 

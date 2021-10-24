@@ -10,9 +10,9 @@ abstract class Drawable {
     }
 
     /**
-     * Draws the object on [canvas] with pivot point at ([x0], [y0]).
+     * Draws the object on [canvas] with pivot point at ([pivotX], [pivotY]).
      */
-    abstract fun draw(canvas: Canvas, x0: Float, y0: Float)
+    abstract fun draw(canvas: Canvas, pivotX: Float, pivotY: Float)
 
     /**
      * Predicts bounding rectangle,
