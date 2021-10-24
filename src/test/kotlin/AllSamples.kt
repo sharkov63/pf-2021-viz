@@ -30,7 +30,7 @@ internal class AllSamples {
             diagramCodes.forEach { diagramCode ->
                 val answerFileName = getAnswerFileName(inputFile, diagramCode)
                 try {
-                    main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", answerFileName))
+                    main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", answerFileName, "--no-window"))
                 } catch (ex: Exception) {
                     assertEquals("Exit block", ex.message)
                 }
@@ -44,7 +44,7 @@ internal class AllSamples {
         val answerFile = File(answerFileName)
         val outputFile = File(outputFileName)
         try {
-            main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", outputFileName))
+            main(arrayOf("-i", inputFile.path, "-d", diagramCode, "-o", outputFileName, "--no-window"))
             assertEquals(answerFile.readText(), outputFile.readText())
         } catch (ex: Exception) {
             assertEquals("Exit block", ex.message)
