@@ -48,8 +48,23 @@ internal class ParseDataTests {
     }
 
     @Test
-    fun `parseDataElementOrNull One token`() {
+    fun `parseDataElementOrNull One NaN token`() {
         assertEquals(null, parseDataElementOrNull("oneToken"))
+    }
+
+    @Test
+    fun `parseDataElementOrNull one number token`() {
+        assertEquals(DataElement("", 85f), parseDataElementOrNull("85"))
+    }
+
+    @Test
+    fun `parseDataElementOrNull one number token with leading spaces`() {
+        assertEquals(DataElement("", 95f), parseDataElementOrNull("     95"))
+    }
+
+    @Test
+    fun `parseDataElementOrNull one number token with trailing spaces`() {
+        assertEquals(DataElement("", 2008f), parseDataElementOrNull("2008     "))
     }
 
     @Test

@@ -23,8 +23,6 @@ typealias Data = List<DataElement>
 /**
  * Get a [DataElement] from a string.
  * Returns null, if the string is invalid.
- *
- * TODO("Allow one token")
  */
 fun parseDataElementOrNull(line: String): DataElement? {
     val tokens = line
@@ -33,11 +31,15 @@ fun parseDataElementOrNull(line: String): DataElement? {
         .split(' ', limit = 2)
         .reversed()
         .map { it.reversed().trimEnd() }
-    if (tokens.size == 1) {
-        // at least two tokens are required: for the label and for the value
+    if (tokens.isEmpty()) {
+        // empty line
         return null
     }
-    val key = tokens.first()
+    val key = if (tokens.size >= 2) {
+        tokens.first()
+    } else {
+        ""
+    }
     val value = tokens.last().toFloatOrNull() ?: return null
     if (value.isInfinite() || value.isNaN()) {
         // bad float
