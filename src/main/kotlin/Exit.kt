@@ -32,6 +32,8 @@ fun exitHelp() {
     println("                                                                               ")
     println("Default scale is 400.                                                          ")
     println("                                                                               ")
+    println("Use --no-window to hide window and --silent or --quiet to enable silent mode.  ")
+    println("                                                                               ")
     println("If output file is specified, writes the diagram to this file in PNG format.    ")
     exitProcess(0)
 }

@@ -3,19 +3,22 @@ import java.io.File
 /**
  * This component contains possible program options.
  *
- * Currently, there are four options:
- * "-i", "--input" for input file
- * "-d", "--diagram" for diagram type
- * "-s", "--scale" for scale
- * "-o", "--output" for output file
- *
- * and three possible flags for sort option:
- * "--no-sort" "--nsort"
- * "--sort"
- * "--reverse-sort" "--rsort"
+ * Current available options:
+ *     -i, --input --- for input file;
+ *     sort option:
+ *         --sort --- sort in value order;
+ *         --rsort, --reverse-sort --- sort in descending value order;
+ *         --lsort, --lex-sort --- sort lexicographically by labels;
+ *         --lrsort, --rlsort, --lex-reverse-sort, --reverse-lex-sort --- sort lexicographically by labels in reverse order;
+ *         --nsort, --no-sort --- leave order as is;
+ *     -d, --diagram --- for diagram type;
+ *     -s, --scale --- for diagram scale;
+ *     -o, --output --- for output file;
+ *     --no-window --- to not create window;
+ *     --silent, --quiet --- to enable silent mode;
  */
+
 // TODO("Add cropBottom option for line and bar diagrams")
-// TODO("Add no window mode")
 // TODO("Add custom padding")
 
 
@@ -25,8 +28,13 @@ enum class Option(val requiresArgument: Boolean) {
     DIAGRAM_TYPE(true),
     DIAGRAM_SCALE(true),
     OUTPUT_FILE(true),
+    NO_WINDOW_OPTION(false),
+    SILENT_MODE(false),
 }
 
+/**
+ * A complete mapping from keywords to options.
+ */
 fun getOptionByKeywordOrNull(keyword: String): Option? {
     return when (keyword) {
         "-i", "--input" -> Option.INPUT_FILE
@@ -39,6 +47,8 @@ fun getOptionByKeywordOrNull(keyword: String): Option? {
         "-d", "--diagram" -> Option.DIAGRAM_TYPE
         "-s", "--scale" -> Option.DIAGRAM_SCALE
         "-o", "--output" -> Option.OUTPUT_FILE
+        "--no-window" -> Option.NO_WINDOW_OPTION
+        "--silent", "--quiet" -> Option.SILENT_MODE
         else -> null
     }
 }
@@ -75,9 +85,20 @@ fun parseRawOptions(args: List<String>): Map<Option, String> {
 
 
 
-fun parseFile(filename: String?): File? {
-    return if (filename != null)
-        File(filename)
+fun parseFile(argument: String?): File? {
+    return if (argument != null)
+        File(argument)
     else
         null
+}
+
+fun parseNoWindowOption(argument: String?): Boolean {
+    return argument == "--no-window"
+}
+
+fun parseSilentModeOption(argument: String?): Boolean {
+    return when (argument) {
+        "--silent", "--quiet" -> true
+        else -> false
+    }
 }

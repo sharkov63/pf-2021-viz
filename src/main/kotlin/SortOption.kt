@@ -1,3 +1,7 @@
+/**
+ * Sort option.
+ * Determines the order of data records in the diagram.
+ */
 enum class SortOption {
     NONE,
     SORT,

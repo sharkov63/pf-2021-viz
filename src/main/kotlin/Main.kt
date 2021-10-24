@@ -1,3 +1,6 @@
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
+
 fun main(args: Array<String>) {
     // Check for help message
     if (args.isNotEmpty() && (args.first() == "-h" || args.first() == "--help")) {
@@ -6,11 +9,19 @@ fun main(args: Array<String>) {
 
     val rawOptions = parseRawOptions(args.toList())
 
+    val silentMode = parseSilentModeOption(rawOptions[Option.SILENT_MODE])
+    if (silentMode) {
+        val dummyStream = PrintStream(ByteArrayOutputStream())
+        System.setOut(dummyStream)
+    }
+
+    // Retrieve actual options
     val inputFile = parseFile(rawOptions[Option.INPUT_FILE])
     val sortOption = parseSortOption(rawOptions[Option.SORT_OPTION])
     val diagramType = parseDiagramType(rawOptions[Option.DIAGRAM_TYPE])
     val diagramScale = parseDiagramScale(rawOptions[Option.DIAGRAM_SCALE])
     val outputFile = parseFile(rawOptions[Option.OUTPUT_FILE])
+    val noWindow = parseNoWindowOption(rawOptions[Option.NO_WINDOW_OPTION])
 
     val data = readData(inputFile)
     if (data.isEmpty()) {
@@ -31,5 +42,9 @@ fun main(args: Array<String>) {
         writeDiagramToPNGFile(outputFile, diagram)
     }
 
-    createDiagramWindow("pf-2021-viz", diagram)
+    if (!noWindow) {
+        createDiagramWindow("pf-2021-viz", diagram)
+    } else {
+        println("Window wasn't created: --no-window option is active.")
+    }
 }
