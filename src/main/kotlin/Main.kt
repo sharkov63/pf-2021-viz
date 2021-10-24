@@ -4,7 +4,13 @@ fun main(args: Array<String>) {
         return exitHelp()
     }
 
-    val (inputFile, sortOption, diagramType, diagramScale, outputFile) = parseOptions(args.toList())
+    val rawOptions = parseRawOptions(args.toList())
+
+    val inputFile = parseFile(rawOptions[Option.INPUT_FILE])
+    val sortOption = parseSortOption(rawOptions[Option.SORT_OPTION])
+    val diagramType = parseDiagramType(rawOptions[Option.DIAGRAM_TYPE])
+    val diagramScale = parseDiagramScale(rawOptions[Option.DIAGRAM_SCALE])
+    val outputFile = parseFile(rawOptions[Option.OUTPUT_FILE])
 
     val data = readData(inputFile)
     if (data.isEmpty()) {

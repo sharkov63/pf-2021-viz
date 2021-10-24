@@ -41,7 +41,7 @@ fun exitUnknownOption(option: String) {
     exitProcess(1)
 }
 
-fun exitOptionRequiresParameter(option: String) {
+fun exitOptionRequiresParameter(option: Option) {
     println("Option \"$option\" requires a parameter specified after it. Use -h or --help to see possible options.")
     exitProcess(1)
 }

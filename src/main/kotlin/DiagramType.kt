@@ -29,9 +29,10 @@ val diagramTypeByDescription = mapOf(
     "fill" to DiagramType.AREA,
 )
 
-fun parseDiagramType(text: String): DiagramType {
-    return diagramTypeByDescription.getOrElse(text.lowercase()) {
-        println("Unknown diagram type ($text). Falling back to default ($DEFAULT_DIAGRAM_TYPE).")
+fun parseDiagramType(argument: String?): DiagramType {
+    if (argument == null) return DEFAULT_DIAGRAM_TYPE
+    return diagramTypeByDescription.getOrElse(argument.lowercase()) {
+        println("Unknown diagram type ($argument). Falling back to default ($DEFAULT_DIAGRAM_TYPE).")
         DEFAULT_DIAGRAM_TYPE
     }
 }
