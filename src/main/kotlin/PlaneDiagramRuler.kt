@@ -1,6 +1,10 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
+/**
+ * A drawable component of PlaneDiagram:
+ * vertical ruler on value (Y) axis with labels and horizontal lines.
+ */
 class PlaneDiagramRuler(
     val diagram: PlaneDiagram,
     private val linesLength: Float,
@@ -80,15 +84,15 @@ class PlaneDiagramRuler(
 
     /**
      * Draw ruler on [canvas]
-     * with starting from pivot ([x0], [y0]).
+     * with starting from pivot ([pivotX], [pivotY]).
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
-        val x1 = x0 + linesLength
-        val y1 = y0 + diagram.scale
+    override fun draw(canvas: Canvas, pivotX: Float, pivotY: Float) {
+        val x1 = pivotX + linesLength
+        val y1 = pivotY + diagram.scale
         val yStep = diagram.scale / rangeRel
 
         if (drawVerticalLine) {
-            canvas.drawLine(x0, y1, x0, y0 - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
+            canvas.drawLine(pivotX, y1, pivotX, pivotY - RULER_LEAK, LIGHT_GREY_STROKE_PAINT)
         }
 
         // Draw each of level lines
@@ -96,7 +100,7 @@ class PlaneDiagramRuler(
             val y = y1 - yStep * i
 
             // Draw line
-            canvas.drawLine(x0 - RULER_LEAK, y, x1, y, LIGHT_GREY_STROKE_PAINT)
+            canvas.drawLine(pivotX - RULER_LEAK, y, x1, y, LIGHT_GREY_STROKE_PAINT)
 
             // Draw label
             val label = labels[i]
@@ -104,7 +108,7 @@ class PlaneDiagramRuler(
             val labelHeight = diagram.font.measureText(label).height
             canvas.drawString(
                 label,
-                x0 - labelWidth - 2 * RULER_LEAK,
+                pivotX - labelWidth - 2 * RULER_LEAK,
                 y + labelHeight / 2,
                 diagram.font,
                 BLACK_FILL_PAINT

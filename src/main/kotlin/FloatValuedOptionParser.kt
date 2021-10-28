@@ -1,3 +1,10 @@
+/**
+ * A class that would parse an option with float value.
+ *
+ * It would automatically ensure that the value is within specified bounds,
+ * set the default value if the argument is not provided or is incorrect;
+ * and print corresponding messages in console.
+ */
 class FloatValuedOptionParser(rawName: String, private val defaultValue: Float, private val minValue: Float, private val maxValue: Float) {
     private val name: String
     private val nameFromUpperCase: String

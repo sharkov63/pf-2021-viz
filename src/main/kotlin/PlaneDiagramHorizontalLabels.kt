@@ -1,6 +1,9 @@
 import org.jetbrains.skija.*
-import kotlin.math.*
 
+/**
+ * A drawable component of PlaneDiagram:
+ * a set of labels on horizontal (X) axis.
+ */
 class PlaneDiagramHorizontalLabels(
     val diagram: PlaneDiagram,
     private val xStep: Float,
@@ -15,23 +18,23 @@ class PlaneDiagramHorizontalLabels(
 
     /**
      * Draw labels on x-axis on [canvas]
-     * starting from x=[x0],
-     * on y-level [y0].
+     * starting from x=[pivotX],
+     * on y-level [pivotY].
      */
-    override fun draw(canvas: Canvas, x0: Float, y0: Float) {
+    override fun draw(canvas: Canvas, pivotX: Float, pivotY: Float) {
         diagram.labels.forEachIndexed { i, label ->
-            val xMid = x0 + xStep * i
+            val xMid = pivotX + xStep * i
 
             // Draw mark
             if (drawMarks) {
-                canvas.drawLine(xMid, y0 + MARK_LEAK, xMid, y0 - MARK_LEAK, BLACK_FILL_PAINT)
+                canvas.drawLine(xMid, pivotY + MARK_LEAK, xMid, pivotY - MARK_LEAK, BLACK_FILL_PAINT)
             }
 
             // Draw label
             canvas.drawString(
                 label,
                 xMid - diagram.labelWidths[i] / 2,
-                y0 + diagram.maxLabelHeight + HORIZONTAL_LABELS_INDENT,
+                pivotY + diagram.maxLabelHeight + HORIZONTAL_LABELS_INDENT,
                 diagram.font,
                 BLACK_FILL_PAINT
             )
