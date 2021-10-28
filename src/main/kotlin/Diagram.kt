@@ -1,7 +1,7 @@
 import org.jetbrains.skija.*
 import kotlin.math.*
 
-
+/* Padding */
 const val DEFAULT_DIAGRAM_PADDING = 50f
 const val MIN_DIAGRAM_PADDING = 0f
 const val MAX_DIAGRAM_PADDING = 1000f
@@ -12,6 +12,7 @@ val diagramPaddingOptionParser = FloatValuedOptionParser(
     MAX_DIAGRAM_PADDING
 )
 
+/* Scale */
 const val DEFAULT_DIAGRAM_SCALE = 400f
 const val MIN_DIAGRAM_SCALE = 100f
 const val MAX_DIAGRAM_SCALE = 2000f
@@ -45,7 +46,9 @@ val TYPEFACE = FontMgr.getDefault().matchFamilyStyle("Lucida Sans Unicode", Font
 val FONT = Font(TYPEFACE, 20f)
 
 
-
+/**
+ * Calculate the minimum bounding rect of two rects.
+ */
 fun unionRects(rect1: Rect, rect2: Rect) = Rect(
     min(rect1.left, rect2.left),
     min(rect1.top, rect2.top),
@@ -59,8 +62,8 @@ fun unionRects(rect1: Rect, rect2: Rect) = Rect(
 /**
  * Generic [Diagram] class.
  *
- * Contains diagram [data] and some statistics,
- * as well as abstract functions.
+ * Contains diagram [data], [scale] and [padding],
+ * as well as some data statistics.
  */
 abstract class Diagram(val data: Data, val scale: Float, val padding: Float) : Drawable() {
     val values = data.map { it.value }
@@ -75,7 +78,8 @@ abstract class Diagram(val data: Data, val scale: Float, val padding: Float) : D
 }
 
 /**
- * Build [Diagram] with [data] of given [type], with given [scale] and [padding].
+ * Build [Diagram] with [data] of given [type],
+ * with given [scale], [padding] and color [rawColorCode].
  */
 fun getDiagram(data: Data, scale: Float, padding: Float, rawColorCode: Int, type: DiagramType): Diagram {
     return when (type) {

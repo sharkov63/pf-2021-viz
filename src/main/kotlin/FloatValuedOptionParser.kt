@@ -5,7 +5,12 @@
  * set the default value if the argument is not provided or is incorrect;
  * and print corresponding messages in console.
  */
-class FloatValuedOptionParser(rawName: String, private val defaultValue: Float, private val minValue: Float, private val maxValue: Float) {
+class FloatValuedOptionParser(
+    rawName: String,
+    private val defaultValue: Float,
+    private val minValue: Float,
+    private val maxValue: Float,
+) {
     private val name: String
     private val nameFromUpperCase: String
 

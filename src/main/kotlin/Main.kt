@@ -10,6 +10,8 @@ fun main(args: Array<String>) {
     val rawOptions = parseRawOptions(args.toList())
 
     val silentMode = parseSilentModeOption(rawOptions[Option.SILENT_MODE])
+    // silent mode has to be enabled before parsing all other options,
+    // as they might print something to stdout
     if (silentMode) {
         val dummyStream = PrintStream(ByteArrayOutputStream())
         System.setOut(dummyStream)

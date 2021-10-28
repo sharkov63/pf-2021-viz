@@ -7,7 +7,13 @@ import kotlin.math.*
  *
  * Inherits from [PlaneDiagram]
  */
-class LineDiagram(data: Data, scale: Float, padding: Float, rawColorCode: Int, val fillArea: Boolean) : PlaneDiagram(data, scale, padding, !fillArea) {
+class LineDiagram(
+    data: Data,
+    scale: Float,
+    padding: Float,
+    rawColorCode: Int,
+    val fillArea: Boolean,
+) : PlaneDiagram(data, scale, padding, !fillArea) {
 
     companion object {
         const val LINE_STROKE_WIDTH_COEFFICIENT = 0.005f
