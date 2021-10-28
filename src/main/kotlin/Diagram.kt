@@ -63,8 +63,6 @@ fun unionRects(rect1: Rect, rect2: Rect) = Rect(
  * as well as abstract functions.
  */
 abstract class Diagram(val data: Data, val scale: Float, val padding: Float) : Drawable() {
-    // TODO("Diagram title")
-
     val values = data.map { it.value }
     val labels = data.map { it.label }
 

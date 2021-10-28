@@ -2,7 +2,6 @@ import java.io.File
 
 /**
  * This component provides reading data for diagrams.
- * TODO("Allow reading data from multiple files")
  */
 
 

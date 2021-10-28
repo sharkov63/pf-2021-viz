@@ -19,8 +19,6 @@ import java.io.File
  *     --silent, --quiet --- to enable silent mode;
  */
 
-// TODO("Add cropBottom option for line and bar diagrams")
-
 
 enum class Option(val requiresArgument: Boolean) {
     INPUT_FILE(true),
