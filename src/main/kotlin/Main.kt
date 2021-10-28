@@ -21,6 +21,7 @@ fun main(args: Array<String>) {
     val diagramType = parseDiagramType(rawOptions[Option.DIAGRAM_TYPE])
     val diagramScale = diagramScaleOptionParser.parse(rawOptions[Option.DIAGRAM_SCALE])
     val diagramPadding = diagramPaddingOptionParser.parse(rawOptions[Option.DIAGRAM_PADDING])
+    val colorOption = parseColorOption(rawOptions[Option.DIAGRAM_COLOR])
     val outputFile = parseFile(rawOptions[Option.OUTPUT_FILE])
     val noWindow = parseNoWindowOption(rawOptions[Option.NO_WINDOW_OPTION])
 
@@ -37,7 +38,7 @@ fun main(args: Array<String>) {
         SortOption.LEX_REVERSE -> data.sortedByDescending { it.label }
     }
 
-    val diagram = getDiagram(orderedData, diagramScale, diagramPadding, diagramType)
+    val diagram = getDiagram(orderedData, diagramScale, diagramPadding, colorOption, diagramType)
 
     if (outputFile != null) {
         writeDiagramToPNGFile(outputFile, diagram)

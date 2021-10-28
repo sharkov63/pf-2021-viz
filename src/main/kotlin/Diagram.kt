@@ -77,11 +77,11 @@ abstract class Diagram(val data: Data, val scale: Float, val padding: Float) : D
 /**
  * Build [Diagram] with [data] of given [type], with given [scale] and [padding].
  */
-fun getDiagram(data: Data, scale: Float, padding: Float, type: DiagramType): Diagram {
+fun getDiagram(data: Data, scale: Float, padding: Float, rawColorCode: Int, type: DiagramType): Diagram {
     return when (type) {
-        DiagramType.BAR -> BarDiagram(data, scale, padding)
+        DiagramType.BAR -> BarDiagram(data, scale, padding, rawColorCode)
         DiagramType.PIE -> PieDiagram(data, scale, padding)
-        DiagramType.LINE -> LineDiagram(data, scale, padding, false)
-        DiagramType.AREA -> LineDiagram(data, scale, padding, true)
+        DiagramType.LINE -> LineDiagram(data, scale, padding, rawColorCode, false)
+        DiagramType.AREA -> LineDiagram(data, scale, padding, rawColorCode, true)
     }
 }

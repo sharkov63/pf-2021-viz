@@ -9,16 +9,15 @@ import kotlin.math.*
  *
  * Data with negative values is not allowed.
  */
-class BarDiagram(data: Data, scale: Float, padding: Float) : PlaneDiagram(data, scale, padding, false) {
+class BarDiagram(data: Data, scale: Float, padding: Float, rawColorCode: Int) : PlaneDiagram(data, scale, padding, false) {
 
     companion object {
-        // Blue color for bars
-        val BAR_PAINT = fillPaintByColorCode(0xFF4F86C6.toInt())
-
         const val MIN_BAR_WIDTH_COEFFICIENT = 0.12f
         const val BAR_PADDING = 2f
         const val X_GAP_COEFFICIENT = 0.05f
     }
+
+    private val barPaint = fillPaintByColorCode(rawColorCode or 0xFF000000.toInt())
 
     override val ruler: PlaneDiagramRuler
     override val horizontalLabels: PlaneDiagramHorizontalLabels
@@ -64,7 +63,7 @@ class BarDiagram(data: Data, scale: Float, padding: Float) : PlaneDiagram(data, 
         for (i in data.indices) {
             val x = x0 + xStep * i
             val y = yCoords[i]
-            canvas.drawRect(Rect(x, y, x + barWidth, y1), BAR_PAINT)
+            canvas.drawRect(Rect(x, y, x + barWidth, y1), barPaint)
         }
 
         horizontalLabels.draw(canvas, x0 + barWidth / 2, y1)

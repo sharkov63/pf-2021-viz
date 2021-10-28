@@ -7,18 +7,18 @@ import kotlin.math.*
  *
  * Inherits from [PlaneDiagram]
  */
-class LineDiagram(data: Data, scale: Float, padding: Float, val fillArea: Boolean) : PlaneDiagram(data, scale, padding, !fillArea) {
+class LineDiagram(data: Data, scale: Float, padding: Float, rawColorCode: Int, val fillArea: Boolean) : PlaneDiagram(data, scale, padding, !fillArea) {
 
     companion object {
-        const val GRAPH_COLOR_CODE = 0xFF4F86C6.toInt()
-        const val AREA_COLOR_CODE = 0xFFAFC1D7.toInt()
-
         const val LINE_STROKE_WIDTH_COEFFICIENT = 0.005f
         const val POINT_STROKE_WIDTH_COEFFICIENT = 0.012f
         const val MIN_X_MARGIN_COEFFICIENT = 0.05f
         const val MIN_X_STEP_COEFFICIENT = 0.15f
         const val X_STEP_INDENT_COEFFICIENT = 0.035f
     }
+
+    private val graphColorCode = rawColorCode or 0xFF000000.toInt()
+    private val areaColorCode = rawColorCode or 0x7F000000
 
     override val ruler: PlaneDiagramRuler
     override val horizontalLabels: PlaneDiagramHorizontalLabels
@@ -56,11 +56,11 @@ class LineDiagram(data: Data, scale: Float, padding: Float, val fillArea: Boolea
      * Draws diagram on [canvas] at pivot point [pivotX], [pivotY].
      */
     override fun draw(canvas: Canvas, pivotX: Float, pivotY: Float) {
-        val linePaint = fillPaintByColorCode(GRAPH_COLOR_CODE).apply {
+        val linePaint = fillPaintByColorCode(graphColorCode).apply {
             strokeWidth = LINE_STROKE_WIDTH_COEFFICIENT * scale
         }
-        val areaPaint = fillPaintByColorCode(AREA_COLOR_CODE)
-        val pointPaint = fillPaintByColorCode(GRAPH_COLOR_CODE).apply {
+        val areaPaint = fillPaintByColorCode(areaColorCode)
+        val pointPaint = fillPaintByColorCode(graphColorCode).apply {
             strokeWidth = POINT_STROKE_WIDTH_COEFFICIENT * scale
             strokeCap = PaintStrokeCap.ROUND
         }

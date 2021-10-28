@@ -14,6 +14,7 @@ import java.io.File
  *     -d, --diagram --- for diagram type;
  *     -s, --scale --- for diagram scale;
  *     -p, --padding --- for diagram padding;
+ *     -c, --color --- for content color of bar, line and area diagrams;
  *     -o, --output --- for output file;
  *     --no-window --- to not create window;
  *     --silent, --quiet --- to enable silent mode;
@@ -26,6 +27,7 @@ enum class Option(val requiresArgument: Boolean) {
     DIAGRAM_TYPE(true),
     DIAGRAM_SCALE(true),
     DIAGRAM_PADDING(true),
+    DIAGRAM_COLOR(true),
     OUTPUT_FILE(true),
     NO_WINDOW_OPTION(false),
     SILENT_MODE(false),
@@ -46,6 +48,7 @@ fun getOptionByKeywordOrNull(keyword: String): Option? {
         "-d", "--diagram" -> Option.DIAGRAM_TYPE
         "-s", "--scale" -> Option.DIAGRAM_SCALE
         "-p", "--padding" -> Option.DIAGRAM_PADDING
+        "-c", "--color" -> Option.DIAGRAM_COLOR
         "-o", "--output" -> Option.OUTPUT_FILE
         "--no-window" -> Option.NO_WINDOW_OPTION
         "--silent", "--quiet" -> Option.SILENT_MODE
