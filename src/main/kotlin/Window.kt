@@ -13,7 +13,8 @@ import javax.swing.WindowConstants
  */
 
 
-
+const val MIN_WINDOW_WIDTH = 100
+const val MIN_WINDOW_HEIGHT = 100
 const val WINDOW_PADDING = 15
 const val CANVAS_UNIT = 1.1f
 
@@ -36,7 +37,7 @@ fun createDiagramWindow(title: String, diagram: Diagram) = runBlocking(Dispatche
         (bounds.height * CANVAS_UNIT + 2 * WINDOW_PADDING).toInt()
     )
 
-    window.minimumSize = Dimension(100, 100)
+    window.minimumSize = Dimension(MIN_WINDOW_WIDTH, MIN_WINDOW_HEIGHT)
     window.pack()
     window.layer.awaitRedraw()
     window.isVisible = true
