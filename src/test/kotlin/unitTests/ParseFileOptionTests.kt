@@ -1,5 +1,10 @@
+package unitTests
+
+import parseFile
 import java.io.File
-import kotlin.test.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 internal class ParseFileOptionTests {
 

@@ -1,4 +1,8 @@
-import kotlin.test.*
+package unitTests
+
+import FloatValuedOptionParser
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 internal class FloatValuedOptionParserTests {
 

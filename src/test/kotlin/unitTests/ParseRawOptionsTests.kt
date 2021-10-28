@@ -1,4 +1,10 @@
-import kotlin.test.*
+package unitTests
+
+import Option
+import parseRawOptions
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertFails
 
 internal class ParseRawOptionsTests {
 
@@ -169,7 +175,12 @@ internal class ParseRawOptionsTests {
             parseRawOptions(listOf("-d", "pie", "-o", "out.png", "-i", "in.txt"))
         )
         assertEquals(
-            mapOf(Option.INPUT_FILE to "in.txt", Option.DIAGRAM_TYPE to "pie", Option.DIAGRAM_SCALE to "300", Option.OUTPUT_FILE to "out.png"),
+            mapOf(
+                Option.INPUT_FILE to "in.txt",
+                Option.DIAGRAM_TYPE to "pie",
+                Option.DIAGRAM_SCALE to "300",
+                Option.OUTPUT_FILE to "out.png"
+            ),
             parseRawOptions(listOf("-d", "pie", "-o", "out.png", "-s", "300", "-i", "in.txt"))
         )
     }

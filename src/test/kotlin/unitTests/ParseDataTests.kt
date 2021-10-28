@@ -1,4 +1,11 @@
-import kotlin.test.*
+package unitTests
+
+import DataElement
+import DataWithSkipStats
+import parseDataElementOrNull
+import parseDataFromLines
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 internal class ParseDataTests {
 
@@ -14,7 +21,10 @@ internal class ParseDataTests {
 
     @Test
     fun `parseDataElementOrNull Many spaces`() {
-        assertEquals(DataElement("many    spaces", 998244353f), parseDataElementOrNull("many    spaces        998244353"))
+        assertEquals(
+            DataElement("many    spaces", 998244353f),
+            parseDataElementOrNull("many    spaces        998244353")
+        )
     }
 
     @Test
@@ -98,11 +108,13 @@ internal class ParseDataTests {
                 ),
                 0
             ),
-            parseDataFromLines(listOf(
-                "foo 1.0",
-                "bar   2",
-                "baz   3.000000    ",
-            ))
+            parseDataFromLines(
+                listOf(
+                    "foo 1.0",
+                    "bar   2",
+                    "baz   3.000000    ",
+                )
+            )
         )
     }
 
@@ -116,11 +128,13 @@ internal class ParseDataTests {
                 ),
                 1
             ),
-            parseDataFromLines(listOf(
-                "Label with spaces 5",
-                "Some invalid line",
-                "     Leading spaces      12.578000000",
-            ))
+            parseDataFromLines(
+                listOf(
+                    "Label with spaces 5",
+                    "Some invalid line",
+                    "     Leading spaces      12.578000000",
+                )
+            )
         )
     }
 }

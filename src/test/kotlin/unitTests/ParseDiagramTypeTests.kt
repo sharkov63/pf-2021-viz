@@ -1,4 +1,11 @@
-import kotlin.test.*
+package unitTests
+
+import DEFAULT_DIAGRAM_TYPE
+import DiagramType
+import diagramTypeByDescription
+import parseDiagramType
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 internal class ParseDiagramTypeTests {
 

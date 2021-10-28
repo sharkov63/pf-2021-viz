@@ -1,4 +1,10 @@
-import kotlin.test.*
+package unitTests
+
+import DEFAULT_SORT_OPTION
+import SortOption
+import parseSortOption
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 internal class ParseSortOptionTests {
 

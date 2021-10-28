@@ -1,5 +1,9 @@
-import kotlin.test.*
+package unitTests
+
+import main
 import java.io.File
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 internal class AllSamples {
     val samplesFolderPath = "samples"

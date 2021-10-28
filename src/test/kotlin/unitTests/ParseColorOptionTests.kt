@@ -1,4 +1,10 @@
-import kotlin.test.*
+package unitTests
+
+import DEFAULT_COLOR_OPTION
+import parseColorOption
+import wordColorDescriptions
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 internal class ParseColorOptionTests {
 
